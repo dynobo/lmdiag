@@ -20,7 +20,7 @@ The plots need a `fitted Linear Regression Model <http://www.statsmodels.org/dev
 
 Example
 ........
-(See also the more extensive `Example Notebook <https://github.com/dynobo/lmdiag/blob/master/example.ibynb>`)
+(See also the more extensive `Example Notebook <https://github.com/dynobo/lmdiag/blob/master/example.ibynb>`_)
 
 ::
 
