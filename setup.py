@@ -8,13 +8,13 @@ def readme():
 
 setup(
     name='lmdiag',
-    version='0.1',
+    version='0.1.0',
     description='Diagnostic Plots for Lineare Regression Models.',
     long_description='Plots a matrix of 4 charts to diagnose linear \
                       regression models. Or plot the charts individually. \
                       Similar to lm.plot in R.',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Information Analysis',
@@ -27,6 +27,7 @@ setup(
     packages=['lmdiag'],
     install_requires=[
         'numpy',
+        'pandas',
         'statsmodels',
         'matplotlib'
     ],

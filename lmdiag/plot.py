@@ -5,6 +5,7 @@ import textwrap
 
 # Extra Libs
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import summary_table, OLSInfluence
@@ -39,6 +40,9 @@ desc = {
         }
 
 
+# VERIFICATIONS
+# ----------------
+
 def verify_input(lm):
     """Check if input parameter is an linear regression model."""
     if not isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
@@ -46,14 +50,84 @@ def verify_input(lm):
     return
 
 
+# GATHERING VALUES
+# ----------------
+
+def get_residuals(lm):
+    tbl, data, labels = summary_table(lm, alpha=0.05)
+    residuals = data[:, 8]
+    return residuals
+
+
+def get_fitted_values(lm):
+    """Return 1-D numpy array with fitted values."""
+    fitted = lm.fittedvalues
+    # Transform series to 1-d array, if necessary
+    if isinstance(fitted, pd.Series):
+        fitted = fitted.values
+    return fitted
+
+
+def get_standard_residuals(lm):
+    vals = OLSInfluence(lm).summary_frame()
+    std_resid = vals['standard_resid'].values
+    return std_resid
+
+
+def get_sqrt_abs_residuals(lm):
+    """Return sqrt(|Standardized resiudals|)."""
+    std_resid = get_standard_residuals(lm)
+    sqrt_abs_res = np.sqrt(np.abs(std_resid))
+    return sqrt_abs_res
+
+
+def get_normalized_quantiles(lm):
+    std_resid = get_standard_residuals(lm)
+    quantiles = np.random.normal(0, 1, len(std_resid))
+    return quantiles
+
+
+# PRINTING CHART DESCRIPTIONS
+# -------------------------
+
+def print_desc(plotname):
+    """Prints description of plot nicely formatted."""
+    for key, val in desc[plotname].items():
+        wrapper = textwrap.TextWrapper(initial_indent=f'{key:>12}: ',
+                                       width=79,
+                                       subsequent_indent=' '*14)
+        print(wrapper.fill(val))
+
+
+def info(*args):
+    """Prints the description of the plots which names are passed
+    as string-argument. If no argument is passed, all descriptions
+    are printed"""
+    # If no argument, print all descriptions
+    if len(args) < 1:
+        for d in desc:
+            print_desc(d)
+            print()
+        return
+    # Else try to print the description
+    for arg in args:
+        if (arg in desc.keys()):
+            print_desc(arg)
+            print()
+        else:
+            print('Unknown plot. Run lmdiag.info() for all available plots')
+
+
+# DRAWING CHARTS
+# ---------------
+
 def resid_fit(lm):
     """Draw Residuals vs. Fitted Values Plot."""
     verify_input(lm)
 
     # Calculate values for scatter points
-    tbl, data, labels = summary_table(lm, alpha=0.05)
-    fitted = lm.fittedvalues
-    residuals = data[:, 8]
+    fitted = get_fitted_values(lm)
+    residuals = get_residuals(lm)
 
     # Calculate lowess for smoothing line
     grid, yhat = lowess(residuals, fitted).T
@@ -69,7 +143,7 @@ def resid_fit(lm):
     # Draw Annotations
     for point in top_3:
         plt.annotate(point,
-                     xy=(fitted.values[point], residuals[point]),
+                     xy=(fitted[point], residuals[point]),
                      color='r')
 
     # Set Labels
@@ -77,8 +151,7 @@ def resid_fit(lm):
     plt.xlabel('Fitted values')
     plt.ylabel('Residuals')
 
-    ax = plt.gca()
-    return ax
+    return plt
 
 
 def q_q(lm):
@@ -86,28 +159,34 @@ def q_q(lm):
     verify_input(lm)
 
     # Calulate values for scatter points
-    vals = OLSInfluence(lm).summary_frame()
-    std_resid = vals['standard_resid'].sort_values().values
-    quantiles = np.random.normal(0, 1, len(std_resid))
-    quantiles = np.sort(quantiles)
+    std_resid = get_standard_residuals(lm)
+    quantiles = get_normalized_quantiles(lm)
+
+    # Sort for Q-Q plot
+    std_resid_sort = np.sort(std_resid)
+    quantiles_sort = np.sort(quantiles)
 
     # Function for fitted line
-    fit = np.polyfit(quantiles, std_resid, deg=1)
+    fit = np.polyfit(quantiles_sort, std_resid_sort, deg=1)
 
     # Get top three observations for annotation
     # (need position of sorted for coord, and original for label)
-    top_3_sorted = np.abs(std_resid).argsort()[-3:][::1]
-    top_3_orig = np.abs(vals['standard_resid'].values).argsort()[-3:][::1]
+    top_3_sorted = np.abs(std_resid_sort).argsort()[-3:][::1]
+    top_3_orig = np.abs(std_resid).argsort()[-3:][::1]
     top_3 = zip(top_3_sorted, top_3_orig)
 
     # Draw scatter and fitted line
-    plt.plot(quantiles, fit[0] * quantiles + fit[1], 'r:')
-    plt.plot(quantiles, std_resid, 'o', mec=edge_col, fillstyle='none')
+    plt.plot(quantiles_sort, fit[0] * quantiles_sort + fit[1], 'r:')
+    plt.plot(quantiles_sort,
+             std_resid_sort,
+             'o',
+             mec=edge_col,
+             fillstyle='none')
 
     # Draw Annotations
     for point in top_3:
         plt.annotate(point[1],
-                     xy=(quantiles[point[0]], std_resid[point[0]]),
+                     xy=(quantiles_sort[point[0]], std_resid_sort[point[0]]),
                      color='r')
 
     # Set Labels
@@ -115,8 +194,7 @@ def q_q(lm):
     plt.xlabel('Theoretical Quantiles')
     plt.ylabel('Standardized residuals')
 
-    ax = plt.gca()
-    return ax
+    return plt
 
 
 def scale_loc(lm):
@@ -124,13 +202,8 @@ def scale_loc(lm):
     verify_input(lm)
 
     # Get Fitted Values
-    tbl, data, labels = summary_table(lm, alpha=0.05)
-    fitted_vals = lm.fittedvalues
-
-    # Get sqrt(|Standardized resiudals|)
-    vals = OLSInfluence(lm).summary_frame()
-    std_resid = vals['standard_resid'].values
-    sqrt_abs_res = np.sqrt(np.abs(std_resid))
+    fitted_vals = get_fitted_values(lm)
+    sqrt_abs_res = get_sqrt_abs_residuals(lm)
 
     # Get top three observations for annotation
     top_3 = sqrt_abs_res.argsort()[-3:][::1]
@@ -145,7 +218,7 @@ def scale_loc(lm):
     # Draw Annotations
     for point in top_3:
         plt.annotate(point,
-                     xy=(fitted_vals.values[point], sqrt_abs_res[point]),
+                     xy=(fitted_vals[point], sqrt_abs_res[point]),
                      color='r')
 
     # Set Labels
@@ -153,8 +226,7 @@ def scale_loc(lm):
     plt.xlabel('Fitted values')
     plt.ylabel(r'$\sqrt{\left|Standardized\ residuals\right|}$')
 
-    ax = plt.gca()
-    return ax
+    return plt
 
 
 def resid_lev(lm):
@@ -200,36 +272,7 @@ def resid_lev(lm):
     plt.xlabel('Leverage')
     plt.ylabel('Standardized residuals')
 
-    ax = plt.gca()
-    return ax
-
-
-def print_desc(plotname):
-    """Prints description of plot nicely formatted."""
-    for key, val in desc[plotname].items():
-        wrapper = textwrap.TextWrapper(initial_indent=f'{key:>12}: ',
-                                       width=79,
-                                       subsequent_indent=' '*14)
-        print(wrapper.fill(val))
-
-
-def info(*args):
-    """Prints the description of the plots which names are passed
-    as string-argument. If no argument is passed, all descriptions
-    are printed"""
-    # If no argument, print all descriptions
-    if len(args) < 1:
-        for d in desc:
-            print_desc(d)
-            print()
-        return
-    # Else try to print the description
-    for arg in args:
-        if (arg in desc.keys()):
-            print_desc(arg)
-            print()
-        else:
-            print('Unknown plot. Run lmdiag.info() for all available plots')
+    return plt
 
 
 def plot(lm):
@@ -250,5 +293,4 @@ def plot(lm):
     # Padding between Charts
     plt.tight_layout(pad=0.5, w_pad=4, h_pad=4)
 
-    ax = plt.gca()
-    return ax
+    return plt
