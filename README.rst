@@ -3,10 +3,12 @@ lmdiag
 
 **Python Library providing Diagnostic Plots for Lineare Regression Models.** (Like `plot.lm <https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/plot.lm>`_ in R.)
 
-I built this, because I missed the diagnostics plots of R for a university project. There are some substitutions in Python for individual charts, but they are spread over different libraries and sometimes don't show the exact same. My implementations tries to copycat the R-plots, but I didn't reimplement the R-code: The charts are just based on the available documentation.
+I built this, because I missed the diagnostics plots of R for a university project. There are some substitutions in Python for individual charts, but they are spread over different libraries and sometimes don't show the exact same. My implementation tries to copycat the R-plots, but I didn't reimplement the R-code: The charts are just based on available documentation.
 
 Installation
 ------------
+
+Available in PyPi: https://pypi.org/project/lmdiag/
 
 - Using pip: ``pip install lmdiag``
 - Using pipenv: ``pipenv install lmdiag``
@@ -18,7 +20,7 @@ The plots need a `fitted Linear Regression Model <http://www.statsmodels.org/dev
 
 Example
 ........
-(See also the more extensive `Example Notebook <http://>`)
+(See also the more extensive `Example Notebook <https://github.com/dynobo/lmdiag/blob/master/example.ibynb>`)
 
 ::
 
@@ -73,7 +75,7 @@ Development
 Disclaimer
 ..........
 
-This is my very first public python library. Don't expect everything to work smoothly. I'm happy to receive helpful fedback or pull requests.
+This is my very first public python library. Don't expect everything to work smoothly. I'm happy to receive useful feedback or pull requests.
 
 Certification
 ..............
