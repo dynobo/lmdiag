@@ -1,7 +1,7 @@
 lmdiag
 =======
 
-Python Library providing Diagnostic Plots for Lineare Regression Models. Similar to [plot.lm in R](https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/plot.lm).
+Python Library providing Diagnostic Plots for Lineare Regression Models. Similar to `plot.lm <https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/plot.lm>`_ in R.
 
 I build this, because I missed the diagnostics plot of R. There are some substitutions for individual charts, but they are spread over different libraries and sometimes are not showing the exact same. My implementations tries to copycat the R-plots, but I didn't reimplement the R-code: The charts are just based on the available documentation.
 
@@ -12,9 +12,9 @@ Installation
 - Using pipenv: ``pipenv install lmdiag``
 
 Usage
-.......
+-----------
 
-The plots need a [fitted Linear Regression Model provided by statsmodels](http://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html) as input.
+The plots need a `fitted Linear Regression Model <http://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html>`_ created by statsmodels as input.
 
 Example
 ........
@@ -43,7 +43,7 @@ Example
 Methods
 ........
 
-- Draw Matrix of all plots:
+- Draw matrix of all plots:
 
   ``lmdiag.plot(lm)``
 
