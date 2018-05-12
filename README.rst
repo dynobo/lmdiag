@@ -43,7 +43,7 @@ Example
         lmdiag.plot(lm);
 
 
-.. image:: example.png
+.. image:: https://raw.githubusercontent.com/dynobo/lmdiag/master/example.png
 
 
 Methods
@@ -79,7 +79,7 @@ This is my very first public python library. Don't expect everything to work smo
 
 Certification
 ..............
-.. image:: badge.png
+.. image:: https://raw.githubusercontent.com/dynobo/lmdiag/master/badge.png
 
 Packaging and Upload to PyPi
 ............................
