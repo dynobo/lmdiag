@@ -1,7 +1,7 @@
 lmdiag
 =======
 
-Python Library providing Diagnostic Plots for Lineare Regression Models. Similar to `plot.lm <https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/plot.lm>`_ in R.
+**Python Library providing Diagnostic Plots for Lineare Regression Models. Similar to `plot.lm <https://www.rdocumentation.org/packages/stats/versions/3.5.0/topics/plot.lm>`_ in R.**
 
 I build this, because I missed the diagnostics plot of R. There are some substitutions for individual charts, but they are spread over different libraries and sometimes are not showing the exact same. My implementations tries to copycat the R-plots, but I didn't reimplement the R-code: The charts are just based on the available documentation.
 
