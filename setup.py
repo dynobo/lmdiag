@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='lmdiag',
-    version='0.1.1',
+    version='0.1.2',
     description=('Diagnostic Plots for Lineare Regression Models. Similar '
                  'to plot.lm in R.'),
     long_description=readme(),
