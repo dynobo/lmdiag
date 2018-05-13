@@ -16,7 +16,7 @@ Available in PyPi: https://pypi.org/project/lmdiag/
 Usage
 -----------
 
-The plots need a `fitted Linear Regression Model <http://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html>`_ created by statsmodels as input.
+The plots need a `fitted Linear Regression Model <https://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html>`_ created by statsmodels as input.
 
 Example
 ........

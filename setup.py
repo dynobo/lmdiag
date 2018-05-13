@@ -8,11 +8,10 @@ def readme():
 
 setup(
     name='lmdiag',
-    version='0.1.0',
-    description='Diagnostic Plots for Lineare Regression Models.',
-    long_description='Plots a matrix of 4 charts to diagnose linear \
-                      regression models. Or plot the charts individually. \
-                      Similar to lm.plot in R.',
+    version='0.1.1',
+    description=('Diagnostic Plots for Lineare Regression Models. Similar '
+                 'to plot.lm in R.'),
+    long_description=readme(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
