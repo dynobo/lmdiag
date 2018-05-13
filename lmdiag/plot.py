@@ -75,7 +75,7 @@ def resid_fit(lm):
     grid, yhat = lowess(residuals, fitted).T
 
     # Get top three observations for annotation
-    top_3 = residuals.argsort()[-3:][::1]
+    top_3 = np.abs(residuals).argsort()[-3:][::1]
 
     # Draw scatter and lowess line
     plt.plot([fitted.min(), fitted.max()], [0, 0], 'k:')
