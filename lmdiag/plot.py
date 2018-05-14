@@ -80,7 +80,12 @@ def resid_fit(lm):
     # Draw scatter and lowess line
     plt.plot([fitted.min(), fitted.max()], [0, 0], 'k:')
     plt.plot(grid, yhat, 'r-')
-    plt.plot(fitted, residuals, 'o', mec=edge_col, fillstyle='none')
+    plt.plot(fitted,
+             residuals,
+             'o',
+             mec=edge_col,
+             markeredgewidth=1,
+             fillstyle='none')
 
     # Draw Annotations
     for point in top_3:
@@ -123,7 +128,8 @@ def q_q(lm):
              std_resid_sort,
              'o',
              mec=edge_col,
-             fillstyle='none')
+             markeredgewidth=1,
+             mfc='none')
 
     # Draw Annotations
     for point in top_3:
@@ -155,7 +161,12 @@ def scale_loc(lm):
 
     # Draw scatter and lowess line
     plt.plot(grid, yhat, 'r-')
-    plt.plot(fitted_vals, sqrt_abs_res, 'o', mec=edge_col, fillstyle='none')
+    plt.plot(fitted_vals,
+             sqrt_abs_res,
+             'o',
+             mec=edge_col,
+             markeredgewidth=1,
+             fillstyle='none')
 
     # Draw Annotations
     for point in top_3:
@@ -200,7 +211,12 @@ def resid_lev(lm):
     plt.plot(x, np.negative(np.sqrt((.5 * params_len * (1 - x)) / x)), 'r--')
     plt.plot(x, np.negative(np.sqrt((1 * params_len * (1 - x)) / x)), 'r--')
     plt.plot(grid, yhat, 'r-')
-    plt.plot(leverage, std_resid, 'o', mec=edge_col, fillstyle='none')
+    plt.plot(leverage,
+             std_resid,
+             'o',
+             mec=edge_col,
+             markeredgewidth=1,
+             fillstyle='none')
 
     # Limit y axis to actual values (otherwise contour lines disturb scale)
     plt.ylim(std_resid.min() * 1.1, std_resid.max() * 1.1)
