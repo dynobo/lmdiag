@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='lmdiag',
-    version='0.1.3',
+    version='0.1.4',
     description=('Diagnostic Plots for Lineare Regression Models. Similar '
                  'to plot.lm in R.'),
     long_description=readme(),
@@ -28,6 +28,7 @@ setup(
         'numpy',
         'pandas',
         'statsmodels',
+        'scipy',
         'matplotlib'
     ],
     test_suite='nose.collector',

@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 numpy = "*"
 statsmodels = "*"
+scipy = "*"
 matplotlib = "*"
 "collective.checkdocs" = "*"
 jupyterlab = "*"

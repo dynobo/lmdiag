@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import summary_table, OLSInfluence
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from scipy.stats import norm
 
 # Global Style Variables
 title_size = 15
@@ -55,9 +56,16 @@ def get_sqrt_abs_residuals(lm):
 
 
 def get_normalized_quantiles(lm):
-    std_resid = get_standard_residuals(lm)
-    quantiles = np.random.normal(0, 1, len(std_resid))
-    return quantiles
+    val_count = len(lm.fittedvalues)
+    positions = (np.arange(1., val_count + 1))/(val_count + 1)
+    norm_quantiles = norm.ppf(positions)
+    return norm_quantiles
+
+
+def get_cooks_d(lm):
+    vals = OLSInfluence(lm).summary_frame()
+    cooks_d = vals['cooks_d'].values
+    return cooks_d
 
 
 # DRAWING CHARTS
@@ -187,9 +195,8 @@ def resid_lev(lm):
     verify_input(lm)
 
     # Get stanardized residuals & cooks distance
-    vals = OLSInfluence(lm).summary_frame()
-    std_resid = vals['standard_resid'].values
-    cooks_d = vals['cooks_d'].values
+    std_resid = get_standard_residuals(lm)
+    cooks_d = get_cooks_d(lm)
 
     # Get top three observations for annotation
     top_3 = cooks_d.argsort()[-3:][::1]
