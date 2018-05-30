@@ -10,6 +10,7 @@ scipy = "*"
 matplotlib = "*"
 "collective.checkdocs" = "*"
 jupyterlab = "*"
+rstcheck = "*"
 
 [dev-packages]
 

@@ -84,6 +84,9 @@ Certification
 Packaging and Upload to PyPi
 ............................
 
+- ``pipenv run rstcheck README.rst`` (check syntax)
+- ``rm -rf ./dist`` (delete old builds)
 - ``python setup.py sdist``
 - ``python setup.py bdist_wheel``
 - ``twine upload dist/*``
+- Then new release on github...
