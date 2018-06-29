@@ -57,7 +57,7 @@ def get_sqrt_abs_residuals(lm):
 
 def get_normalized_quantiles(lm):
     val_count = len(lm.fittedvalues)
-    positions = (np.arange(1., val_count + 1))/(val_count + 1)
+    positions = (np.arange(1.0, val_count + 1))/(val_count + 1.0)
     norm_quantiles = norm.ppf(positions)
     return norm_quantiles
 
@@ -213,10 +213,10 @@ def resid_lev(lm):
     grid, yhat = lowess(std_resid, leverage).T
 
     # Draw cooks distance contours, scatter and lowess line
-    plt.plot(x, np.sqrt((.5 * params_len * (1 - x)) / x), 'r--')
-    plt.plot(x, np.sqrt((1 * params_len * (1 - x)) / x), 'r--')
-    plt.plot(x, np.negative(np.sqrt((.5 * params_len * (1 - x)) / x)), 'r--')
-    plt.plot(x, np.negative(np.sqrt((1 * params_len * (1 - x)) / x)), 'r--')
+    plt.plot(x, np.sqrt((0.5 * params_len * (1 - x)) / x), 'r--')
+    plt.plot(x, np.sqrt((1.0 * params_len * (1 - x)) / x), 'r--')
+    plt.plot(x, np.negative(np.sqrt((0.5 * params_len * (1 - x)) / x)), 'r--')
+    plt.plot(x, np.negative(np.sqrt((1.0 * params_len * (1 - x)) / x)), 'r--')
     plt.plot(grid, yhat, 'r-')
     plt.plot(leverage,
              std_resid,
