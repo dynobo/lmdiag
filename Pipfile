@@ -11,6 +11,7 @@ matplotlib = "*"
 "collective.checkdocs" = "*"
 jupyterlab = "*"
 rstcheck = "*"
+pandas = "*"
 
 [dev-packages]
 

@@ -84,7 +84,7 @@ desc = {
 def print_desc(plotname):
     """Prints description of plot nicely formatted."""
     for key, val in desc[plotname].items():
-        wrapper = textwrap.TextWrapper(initial_indent=f'{key:>12}: ',
+        wrapper = textwrap.TextWrapper(initial_indent='{:>12}: '.format(key),
                                        width=79,
                                        subsequent_indent=' '*14)
         print(wrapper.fill(val))

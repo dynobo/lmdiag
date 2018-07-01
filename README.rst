@@ -76,6 +76,7 @@ Disclaimer
 ..........
 
 This is my very first public python library. Don't expect everything to work smoothly. I'm happy to receive useful feedback or pull requests.
+        'Programming Language :: Python :: 3.6',
 
 Certification
 ..............

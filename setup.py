@@ -8,13 +8,14 @@ def readme():
 
 setup(
     name='lmdiag',
-    version='0.2.0',
+    version='0.3.0',
     description=('Diagnostic Plots for Lineare Regression Models. Similar '
                  'to plot.lm in R.'),
     long_description=readme(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Information Analysis',
     ],
