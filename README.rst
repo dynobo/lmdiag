@@ -18,6 +18,8 @@ Usage
 
 The plots need a `fitted Linear Regression Model <https://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html>`_ created by statsmodels as input.
 
+Fitted `Model from Linearmodels <https://bashtage.github.io/linearmodels/doc/index.html>` should also work, however, that's not tested very well.
+
 Example
 ........
 (See also the more extensive `Example Notebook <https://github.com/dynobo/lmdiag/blob/master/example.ipynb>`_)

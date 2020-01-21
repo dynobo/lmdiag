@@ -8,12 +8,20 @@ numpy = "*"
 statsmodels = "*"
 scipy = "*"
 matplotlib = "*"
-"collective.checkdocs" = "*"
-jupyterlab = "*"
-rstcheck = "*"
 pandas = "*"
+linearmodels = "*"
 
 [dev-packages]
+rstcheck = "*"
+"collective.checkdocs" = "*"
+jupyterlab = "*"
+mypy = "*"
+black = "*"
+pylint = "*"
+pytest = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
