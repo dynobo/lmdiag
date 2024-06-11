@@ -1,0 +1,29 @@
+[project]
+name = "lmdiag"
+version = "0.3.8"
+description = "Diagnostic Plots for Lineare Regression Models. Similar to plot.lm in R."
+keywords = ["lm lineare regression diagnostics plot chart r matplotlib"]
+readme = "README.md"
+authors = [{ name = "dynobo", email = "dynobo@mailbox.org" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = ["matplotlib", "numpy", "pandas", "scipy", "statsmodels"]
+optional-dependencies = { dev = ["ruff", "mypy", "pre-commit", "linearmodels"] }
+
+license = { text = "MIT" }
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "http://github.com/dynobo/lmdiag"
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 61.0"]
