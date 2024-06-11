@@ -1,7 +1,7 @@
 """Module for Diagnosis Plots of Linear Regression Models."""
 
 import math
-from typing import Any, TypeAlias
+from typing import Any, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +10,7 @@ import statsmodels.api as sm
 from scipy.stats import norm
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from statsmodels.stats.outliers_influence import OLSInfluence, summary_table
+from typing_extensions import TypeAlias
 
 try:
     import linearmodels
@@ -118,7 +119,7 @@ class LinearmodelsValues:
         return h_ii
 
 
-ModelType: TypeAlias = LinearmodelsValues | StatsmodelsValues
+ModelType: TypeAlias = Union[LinearmodelsValues, StatsmodelsValues]
 
 
 def select_model_type(lm: Any) -> ModelType:  # noqa: ANN401

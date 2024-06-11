@@ -111,13 +111,13 @@ def print_desc(plot_name: str) -> None:
         print(wrapper.fill(val))  # noqa: T201
 
 
-def info(plot_names: Union[tuple[str], list[str]] = ()) -> None:
+def info(plot_names: Union[tuple[str], list[str], None] = None) -> None:
     """Print the description of the plots which names are passed as string-argument.
 
     If no argument is passed, all descriptions are printed
     """
     # If no argument, print all descriptions
-    if len(plot_names) < 1:
+    if not plot_names:
         for d in desc:
             print_desc(d)
             print()  # noqa: T201
