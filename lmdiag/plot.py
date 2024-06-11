@@ -1,39 +1,36 @@
-"""Module for Diagnosis Plots of Lineare Regression Models."""
-# Standard
-import math
+"""Module for Diagnosis Plots of Linear Regression Models."""
 
-# Extra Libs
+import math
+from typing import Any, TypeAlias
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import statsmodels.api as sm
-from statsmodels.stats.outliers_influence import summary_table, OLSInfluence
-from statsmodels.nonparametric.smoothers_lowess import lowess
 from scipy.stats import norm
-import linearmodels
+from statsmodels.nonparametric.smoothers_lowess import lowess
+from statsmodels.stats.outliers_influence import OLSInfluence, summary_table
+
+try:
+    import linearmodels
+
+except ImportError:
+    linearmodels = None
 
 # GLOBAL STYLE VARIABLES
-# ----------------
-
-
 title_size = 15
 edge_col = (0, 0, 0, 0.6)
 
 
-# GATHERING VALUES FOR STATSMODEL
-# --------------------------------
-
-
-class statsmodels_values:
-    def __init__(self, lm):
+class StatsmodelsValues:
+    def __init__(self, lm: sm.regression.linear_model.RegressionResultsWrapper) -> None:
         self.lm = lm
 
-    def get_residuals(self):
+    def get_residuals(self) -> np.ndarray:
         _, data, _ = summary_table(self.lm, alpha=0.05)
-        residuals = data[:, 8]
-        return residuals
+        return data[:, 8]
 
-    def get_fitted_values(self):
+    def get_fitted_values(self) -> pd.Series:
         """Return 1-D numpy array with fitted values."""
         fitted = self.lm.fittedvalues
         # Transform series to 1-d array, if necessary
@@ -41,45 +38,40 @@ class statsmodels_values:
             fitted = fitted.values
         return fitted
 
-    def get_standard_residuals(self):
+    def get_standard_residuals(self) -> np.typing.ArrayLike:
         vals = OLSInfluence(self.lm).summary_frame()
-        std_resid = vals["standard_resid"].values
-        return std_resid
+        return vals["standard_resid"].values
 
-    def get_sqrt_abs_residuals(self):
-        """Return sqrt(|Standardized resiudals|)."""
+    def get_sqrt_abs_residuals(self) -> np.ndarray:
+        """Return sqrt(|Standardized residuals|)."""
         std_resid = self.get_standard_residuals()
-        sqrt_abs_res = np.sqrt(np.abs(std_resid))
-        return sqrt_abs_res
+        return np.sqrt(np.abs(std_resid))
 
-    def get_normalized_quantiles(self):
+    def get_normalized_quantiles(self) -> np.ndarray:
         val_count = len(self.lm.fittedvalues)
         positions = (np.arange(1.0, val_count + 1)) / (val_count + 1.0)
-        norm_quantiles = norm.ppf(positions)
-        return norm_quantiles
+        return norm.ppf(positions)
 
-    def get_cooks_d(self):
+    def get_cooks_d(self) -> np.typing.ArrayLike:
         vals = OLSInfluence(self.lm).summary_frame()
-        cooks_d = vals["cooks_d"].values
-        return cooks_d
+        return vals["cooks_d"].values
 
-    def get_leverage(self):
-        infl = self.lm.get_influence()
-        return infl.hat_matrix_diag
-
-
-# GATHERING VALUES FOR LINEARMODELS
-# ---------------------------------
+    def get_leverage(self) -> np.typing.ArrayLike:
+        influence = self.lm.get_influence()
+        return influence.hat_matrix_diag
 
 
-class linearmodels_values:
-    def __init__(self, lm):
+class LinearmodelsValues:
+    def __init__(self, lm: Any) -> None:  # noqa: ANN401
+        if linearmodels and not isinstance(lm, linearmodels.iv.results.OLSResults):
+            raise TypeError("Model type not supported.")
+
         self.lm = lm
 
-    def get_residuals(self):
+    def get_residuals(self) -> np.ndarray:
         return self.lm.resids
 
-    def get_fitted_values(self):
+    def get_fitted_values(self) -> np.ndarray:
         """Return 1-D numpy array with fitted values."""
         fitted = self.lm.fitted_values
 
@@ -89,67 +81,56 @@ class linearmodels_values:
 
         return fitted
 
-    def get_standard_residuals(self):
-        X = self.lm.model._x[:, 1]
-        mean_X = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_X), (X - mean_X))
+    def get_standard_residuals(self) -> np.ndarray:
+        x = self.lm.model._x[:, 1]
+        mean_x = np.mean(x)
+        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
         residuals = self.get_residuals()
-        h_ii = (X - mean_X) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
-        Var_e = math.sqrt(self.lm.resid_ss / (self.lm.nobs - 2))
-        SE_regression = Var_e * ((1 - h_ii) ** 0.5)
-        std_resid = residuals / SE_regression
-        return std_resid
+        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
+        var_e = math.sqrt(self.lm.resid_ss / (self.lm.nobs - 2))
+        se_regression = var_e * ((1 - h_ii) ** 0.5)
+        return residuals / se_regression
 
-    def get_sqrt_abs_residuals(self):
-        """Return sqrt(|Standardized resiudals|)."""
+    def get_sqrt_abs_residuals(self) -> np.ndarray:
+        """Return sqrt(|Standardized residuals|)."""
         std_resid = self.get_standard_residuals()
-        sqrt_abs_res = np.sqrt(np.abs(std_resid))
-        return sqrt_abs_res
+        return np.sqrt(np.abs(std_resid))
 
-    def get_normalized_quantiles(self):
+    def get_normalized_quantiles(self) -> np.ndarray:
         val_count = len(self.get_fitted_values())
         positions = (np.arange(1.0, val_count + 1)) / (val_count + 1.0)
-        norm_quantiles = norm.ppf(positions)
-        return norm_quantiles
+        return norm.ppf(positions)
 
-    def get_cooks_d(self):
-        X = self.lm.model._x[:, 1]
-        mean_X = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_X), (X - mean_X))
-        h_ii = (X - mean_X) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
+    def get_cooks_d(self) -> np.ndarray:
+        x = self.lm.model._x[:, 1]
+        mean_x = np.mean(x)
+        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
+        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
         cooks_d2 = self.get_standard_residuals() ** 2 / len(self.lm.params)
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
-    def get_leverage(self):
-        X = self.lm.model._x[:, 1]
-        mean_X = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_X), (X - mean_X))
-        h_ii = (X - mean_X) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
+    def get_leverage(self) -> np.ndarray:
+        x = self.lm.model._x[:, 1]
+        mean_x = np.mean(x)
+        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
+        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self.lm.nobs)
         return h_ii
 
 
-# SELECT VALUE METHODS ACCORDING TO MODEL TYPE
-# --------------------------------------------
+ModelType: TypeAlias = LinearmodelsValues | StatsmodelsValues
 
 
-def select_model_type(lm):
+def select_model_type(lm: Any) -> ModelType:  # noqa: ANN401
     """Check if input parameter is an linear regression model."""
     if isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
-        return statsmodels_values(lm)
-    elif isinstance(lm, linearmodels.iv.results.OLSResults):
-        return linearmodels_values(lm)
-    else:
-        raise TypeError(
-            "Input is no statsmodel OLS model and no linearmodels OLS model!"
-        )
+        return StatsmodelsValues(lm)
+    if linearmodels and isinstance(lm, linearmodels.iv.results.OLSResults):
+        return LinearmodelsValues(lm)
+    raise TypeError("Model type not supported.")
 
 
-# DRAW CHARTS
-# ---------------
-
-
-def resid_fit(lm):
+def resid_fit(lm: ModelType) -> plt:
     """Draw Residuals vs. Fitted Values Plot."""
     model_values = select_model_type(lm)
 
@@ -180,11 +161,11 @@ def resid_fit(lm):
     return plt
 
 
-def q_q(lm):
+def q_q(lm: ModelType) -> plt:
     """Draw Q-Q-Plot."""
     model_values = select_model_type(lm)
 
-    # Calulate values for scatter points
+    # Calculate values for scatter points
     std_resid = model_values.get_standard_residuals()
     quantiles = model_values.get_normalized_quantiles()
 
@@ -221,7 +202,7 @@ def q_q(lm):
     return plt
 
 
-def scale_loc(lm):
+def scale_loc(lm: ModelType) -> plt:
     """Draw Scale-Location Plot."""
     model_values = select_model_type(lm)
 
@@ -258,11 +239,11 @@ def scale_loc(lm):
     return plt
 
 
-def resid_lev(lm):
-    """Draw Stanardized Residuals vs. Leverage Plot."""
+def resid_lev(lm: ModelType) -> plt:
+    """Draw Standardized Residuals vs. Leverage Plot."""
     model_values = select_model_type(lm)
 
-    # Get stanardized residuals & cooks distance
+    # Get standardized residuals & cooks distance
     std_resid = model_values.get_standard_residuals()
     cooks_d = model_values.get_cooks_d()
 
@@ -304,7 +285,7 @@ def resid_lev(lm):
     return plt
 
 
-def plot(lm):
+def plot(lm: ModelType) -> plt:
     """Plot all 4 charts as a Matrix."""
     # Draw plot by plot
     plt.subplot(2, 2, 1)

@@ -24,13 +24,16 @@ repos:
         stages: [commit]
         language: system
         entry: ruff check .
+        pass_filenames: false
       - id: ruff-format
         name: ruff format
         stages: [commit]
         language: system
         entry: ruff format .
+        pass_filenames: false
       - id: mypy
         name: mypy
         stages: [commit]
         language: system
         entry: mypy
+        pass_filenames: false
