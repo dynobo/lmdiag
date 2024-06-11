@@ -23,7 +23,13 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = ["matplotlib", "numpy", "pandas", "scipy", "statsmodels"]
-optional-dependencies = { dev = ["ruff", "mypy", "pre-commit", "linearmodels"] }
+optional-dependencies = { dev = [
+    "ruff",
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "linearmodels",
+] }
 
 license = { text = "MIT" }
 requires-python = ">=3.9"
@@ -90,4 +96,5 @@ ignore = [
     "TRY003", # Avoid specifying long messages outside the exception class
     "ISC001", # Rule conflicts with ruff's formatter
     "RET504", # Unnecessary assignment before return statement
+    "S101",   # Use of assert detected
 ]
