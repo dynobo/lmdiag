@@ -93,6 +93,7 @@ ignore = [
     "D203",   # One black line before class
     "D213",   # Multi line summary second line
     "ANN101", # Missing type annotation for `self` in method
+    "ANN401", # Dynamically typed expression Any
     "TRY003", # Avoid specifying long messages outside the exception class
     "ISC001", # Rule conflicts with ruff's formatter
     "RET504", # Unnecessary assignment before return statement
