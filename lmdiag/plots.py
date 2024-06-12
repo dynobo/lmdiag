@@ -155,6 +155,7 @@ def resid_lev(lm: Any) -> plt:
     params_count = lm_stats.params_count
 
     # Calculate lowess for smoothing line
+    # TODO: Faster alternative to lowess?
     grid, yhat = lowess(std_resid, leverage).T
 
     # Draw cooks distance contours, scatter and lowess line

@@ -1,27 +1,30 @@
-import math
-from functools import cached_property
 from typing import TYPE_CHECKING
 
 import linearmodels
 import numpy as np
 import pandas as pd
 
-from lmdiag.lm_stats.base import StatsBase
+from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
 
 if TYPE_CHECKING:
     import linearmodels
 
 
 class LinearmodelsStats(StatsBase):
-    def __init__(self, lm: linearmodels.iv.results.OLSResults) -> None:
+    def __init__(
+        self,
+        lm: linearmodels.iv.results.OLSResults,
+        cache: bool = True,
+    ) -> None:
         super().__init__()
         self._lm = lm
+        self._cache_properties = cache
 
-    @cached_property
+    @optionally_cached_property
     def residuals(self) -> np.ndarray:
         return self._lm.resids
 
-    @cached_property
+    @optionally_cached_property
     def fitted_values(self) -> np.ndarray:
         fitted = self._lm.fitted_values
 
@@ -31,19 +34,18 @@ class LinearmodelsStats(StatsBase):
 
         return fitted
 
-    @cached_property
+    @optionally_cached_property
     def standard_residuals(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
         diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
         residuals = self.residuals
         h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
-        # TODO: sqrt with numpy
-        var_e = math.sqrt(self._lm.resid_ss / (self._lm.nobs - 2))
+        var_e = np.sqrt(self._lm.resid_ss / (self._lm.nobs - 2))
         se_regression = var_e * ((1 - h_ii) ** 0.5)
         return residuals / se_regression
 
-    @cached_property
+    @optionally_cached_property
     def cooks_d(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
@@ -53,7 +55,7 @@ class LinearmodelsStats(StatsBase):
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
-    @cached_property
+    @optionally_cached_property
     def leverage(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
@@ -61,7 +63,6 @@ class LinearmodelsStats(StatsBase):
         h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
         return h_ii
 
-    @cached_property
+    @optionally_cached_property
     def params_count(self) -> int:
-        # TODO: Check if this work
         return len(self._lm.params)
