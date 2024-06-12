@@ -1,4 +1,5 @@
 import math
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 import linearmodels
@@ -16,11 +17,11 @@ class LinearmodelsStats(StatsBase):
         super().__init__()
         self._lm = lm
 
-    @property
+    @cached_property
     def residuals(self) -> np.ndarray:
         return self._lm.resids
 
-    @property
+    @cached_property
     def fitted_values(self) -> np.ndarray:
         fitted = self._lm.fitted_values
 
@@ -30,7 +31,7 @@ class LinearmodelsStats(StatsBase):
 
         return fitted
 
-    @property
+    @cached_property
     def standard_residuals(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
@@ -42,7 +43,7 @@ class LinearmodelsStats(StatsBase):
         se_regression = var_e * ((1 - h_ii) ** 0.5)
         return residuals / se_regression
 
-    @property
+    @cached_property
     def cooks_d(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
@@ -52,7 +53,7 @@ class LinearmodelsStats(StatsBase):
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
-    @property
+    @cached_property
     def leverage(self) -> np.ndarray:
         x = self._lm.model._x[:, 1]
         mean_x = np.mean(x)
@@ -60,7 +61,7 @@ class LinearmodelsStats(StatsBase):
         h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
         return h_ii
 
-    @property
+    @cached_property
     def params_count(self) -> int:
         # TODO: Check if this work
         return len(self._lm.params)

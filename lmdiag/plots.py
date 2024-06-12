@@ -21,7 +21,7 @@ title_size = 15
 edge_col = (0, 0, 0, 0.6)
 
 
-def init_model_stats(lm: Any) -> StatsBase:
+def init_lm_stats(lm: Any) -> StatsBase:
     """Check if input parameter is an linear regression model."""
     if isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
         return StatsmodelsStats(lm)
@@ -32,7 +32,7 @@ def init_model_stats(lm: Any) -> StatsBase:
 
 def resid_fit(lm: Any) -> plt:
     """Draw Residuals vs. Fitted Values Plot."""
-    lm_stats = init_model_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
     # Calculate values for scatter points
     fitted = lm_stats.fitted_values
@@ -63,7 +63,7 @@ def resid_fit(lm: Any) -> plt:
 
 def q_q(lm: Any) -> plt:
     """Draw Q-Q-Plot."""
-    lm_stats = init_model_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
     # Calculate values for scatter points
     std_resid = lm_stats.standard_residuals
@@ -104,7 +104,7 @@ def q_q(lm: Any) -> plt:
 
 def scale_loc(lm: Any) -> plt:
     """Draw Scale-Location Plot."""
-    lm_stats = init_model_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
     # Get Fitted Values
     fitted_vals = lm_stats.fitted_values
@@ -141,7 +141,7 @@ def scale_loc(lm: Any) -> plt:
 
 def resid_lev(lm: Any) -> plt:
     """Draw Standardized Residuals vs. Leverage Plot."""
-    lm_stats = init_model_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
     std_resid = lm_stats.standard_residuals
     cooks_d = lm_stats.cooks_d
@@ -184,18 +184,20 @@ def resid_lev(lm: Any) -> plt:
 
 def plot(lm: Any) -> plt:
     """Plot all 4 charts as a Matrix."""
+    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+
     # Draw plot by plot
     plt.subplot(2, 2, 1)
-    resid_fit(lm)
+    resid_fit(lm_stats)
 
     plt.subplot(2, 2, 2)
-    q_q(lm)
+    q_q(lm_stats)
 
     plt.subplot(2, 2, 3)
-    scale_loc(lm)
+    scale_loc(lm_stats)
 
     plt.subplot(2, 2, 4)
-    resid_lev(lm)
+    resid_lev(lm_stats)
 
     # Padding between Charts
     plt.tight_layout(pad=0.5, w_pad=4, h_pad=4)
