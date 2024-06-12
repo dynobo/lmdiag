@@ -37,3 +37,9 @@ repos:
         language: system
         entry: mypy
         pass_filenames: false
+      - id: pytest
+        name: pytest
+        stages: [commit]
+        language: system
+        entry: pytest
+        pass_filenames: false
