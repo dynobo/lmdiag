@@ -26,26 +26,25 @@ work, however, that's not tested very well.
 
 ### Example
 
-(See also the more extensive
-[Example Notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb))
+(Find more examples in
+[this jupyter notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb))
 
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import statsmodels.api as sm
-    import lmdiag
+```python
+import numpy as np
+import statsmodels.api as sm
+import lmdiag
 
-    %matplotlib inline  # In Jupyter
+# Generate sample model
+np.random.seed(20)
+predictor = np.random.normal(size=30, loc=20, scale=3)
+response = 5 + 5 * predictor + np.random.normal(size=30)
+X = sm.add_constant(predictor)
+lm = sm.OLS(response, X).fit()
 
-    # Generate sample model
-    np.random.seed(20)
-    predictor = np.random.normal(size=30, loc=20, scale=3)
-    response = 5 + 5 * predictor + np.random.normal(size=30)
-    X = sm.add_constant(predictor)
-    lm = sm.OLS(response, X).fit()
-
-    # Plot chart matrix (and enlarge figure)
-    plt.figure(figsize=(10,7))
-    lmdiag.plot(lm);
+# Plot chart matrix (and enlarge figure)
+fig = lmdiag.plot(lm)
+fig.show()
+```
 
 ![image](https://raw.githubusercontent.com/dynobo/lmdiag/master/example.png)
 
@@ -70,6 +69,36 @@ work, however, that's not tested very well.
   `lmdiag.info()` (for all plots)
 
   `lmdiag.info('<method name>')` (for individual plot)
+
+### Performance
+
+Plotting models fitted on large datasets can be slow. There are some things you can try
+to speed it up:
+
+#### 1. Tune LOWESS-settings
+
+The smoothing lines (red) are calculated using the "Locally Weighted Scatterplot
+Smoothing" algorithms, which can be quite expensive. Try a _lower_ value for `lowess_it`
+and a _higher_ value for `lowess_delta` to gain speed at the cost of accuracy:
+
+```python
+lmdiag.plot(lm, lowess_it=1, lowess_delta=0.02)
+# Note: lmdiag's defaults are lowess_it=2, lowess_delta=0.005
+```
+
+(For details about these parameters, see
+[statsmodels docs](<](https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html)>).)
+
+#### 2. Change matplotlib backend
+
+Try a different
+[matplotlib backend](https://matplotlib.org/stable/users/explain/figure/backends.html).
+Especially static backends like `AGG` or `Cairo` should be faster, e.g.:
+
+```python
+import matplotlib
+matplotlib.use('agg')
+```
 
 ## Development
 

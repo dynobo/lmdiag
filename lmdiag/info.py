@@ -2,6 +2,7 @@
 
 # Standard Libs
 import textwrap
+from collections.abc import Iterable
 from typing import Union
 
 # Plot descriptions
@@ -111,14 +112,16 @@ def print_desc(plot_name: str) -> None:
         print(wrapper.fill(val), end="\n\n")  # noqa: T201
 
 
-def info(plot_names: Union[tuple[str], list[str], None] = None) -> None:
+def info(plot_names: Union[Iterable[str], str, None] = None) -> None:
     """Print the description of the plots which names are passed as string-argument.
 
     If no argument is passed, all descriptions are printed
     """
-    # If no argument, print all descriptions
     if not plot_names:
+        # If no argument, print all descriptions
         plot_names = [str(k) for k in desc]
+    elif isinstance(plot_names, str):
+        plot_names = [plot_names]
 
     # Else try to print the description
     for plot_name in plot_names:

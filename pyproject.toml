@@ -26,6 +26,7 @@ dependencies = ["matplotlib", "numpy", "pandas", "scipy", "statsmodels"]
 optional-dependencies = { dev = [
     "linearmodels",
     "mypy",
+    "notebook",
     "pre-commit",
     "pytest",
     "ruff",

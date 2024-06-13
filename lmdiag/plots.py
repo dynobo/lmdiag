@@ -1,7 +1,8 @@
 """Module for Diagnosis Plots of Linear Regression Models."""
 
-from typing import Any
+from typing import Any, Optional
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import statsmodels.api as sm
@@ -37,10 +38,18 @@ def init_lm_stats(lm: Any) -> StatsBase:
 
 
 def resid_fit(
-    lm: Any, lowess_delta: float = LOWESS_DELTA, lowess_it: int = LOWESS_IT
-) -> plt:
+    lm: Any,
+    ax: Optional[mpl.axes.Axes] = None,
+    lowess_delta: float = LOWESS_DELTA,
+    lowess_it: int = LOWESS_IT,
+) -> mpl.figure.Figure:
     """Draw Residuals vs. Fitted Values Plot."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.get_figure()
 
     # Calculate values for scatter points
     fitted = lm_stats.fitted_values
@@ -53,27 +62,30 @@ def resid_fit(
     top_3 = np.abs(residuals).argsort()[-3:][::1]
 
     # Draw scatter and lowess line
-    plt.plot([fitted.min(), fitted.max()], [0, 0], "k:")
-    plt.plot(grid, yhat, "r-")
-    plt.plot(
-        fitted, residuals, "o", mec=EDGE_COLOR, markeredgewidth=1, fillstyle="none"
-    )
+    ax.plot([fitted.min(), fitted.max()], [0, 0], "k:")
+    ax.plot(grid, yhat, "r-")
+    ax.plot(fitted, residuals, "o", mec=EDGE_COLOR, markeredgewidth=1, fillstyle="none")
 
     # Draw Annotations
     for point in top_3:
-        plt.annotate(point, xy=(fitted[point], residuals[point]), color="r")
+        ax.annotate(point, xy=(fitted[point], residuals[point]), color="r")
 
     # Set Labels
-    plt.title("Residual vs. Fitted", fontsize=TITLE_SIZE)
-    plt.xlabel("Fitted values")
-    plt.ylabel("Residuals")
+    ax.set_title("Residual vs. Fitted", fontsize=TITLE_SIZE)
+    ax.set_xlabel("Fitted values")
+    ax.set_ylabel("Residuals")
 
-    return plt
+    return fig
 
 
-def q_q(lm: Any) -> plt:
+def q_q(lm: Any, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
     """Draw Q-Q-Plot."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.get_figure()
 
     # Calculate values for scatter points
     std_resid = lm_stats.standard_residuals
@@ -92,9 +104,8 @@ def q_q(lm: Any) -> plt:
     top_3_orig = np.abs(std_resid).argsort()[-3:][::1]
     top_3 = zip(top_3_sorted, top_3_orig)
 
-    # Draw scatter and fitted line
-    plt.plot(quantiles_sort, fit[0] * quantiles_sort + fit[1], "r:")
-    plt.plot(
+    ax.plot(quantiles_sort, fit[0] * quantiles_sort + fit[1], "r:")
+    ax.plot(
         quantiles_sort,
         std_resid_sort,
         "o",
@@ -103,25 +114,31 @@ def q_q(lm: Any) -> plt:
         mfc="none",
     )
 
-    # Draw Annotations
     for point in top_3:
-        plt.annotate(
+        ax.annotate(
             point[1], xy=(quantiles_sort[point[0]], std_resid_sort[point[0]]), color="r"
         )
 
-    # Set Labels
-    plt.title("Normal Q-Q", fontsize=TITLE_SIZE)
-    plt.xlabel("Theoretical Quantiles")
-    plt.ylabel("Standardized residuals")
+    ax.set_title("Normal Q-Q", fontsize=TITLE_SIZE)
+    ax.set_xlabel("Theoretical Quantiles")
+    ax.set_ylabel("Standardized residuals")
 
-    return plt
+    return fig
 
 
 def scale_loc(
-    lm: Any, lowess_delta: float = LOWESS_DELTA, lowess_it: int = LOWESS_IT
-) -> plt:
+    lm: Any,
+    ax: Optional[mpl.axes.Axes] = None,
+    lowess_delta: float = LOWESS_DELTA,
+    lowess_it: int = LOWESS_IT,
+) -> mpl.figure.Figure:
     """Draw Scale-Location Plot."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.get_figure()
 
     # Get Fitted Values
     fitted_vals = lm_stats.fitted_values
@@ -133,9 +150,8 @@ def scale_loc(
     # Calculate lowess for smoothing line
     grid, yhat = lowess(sqrt_abs_res, fitted_vals, it=lowess_it, delta=lowess_delta).T
 
-    # Draw scatter and lowess line
-    plt.plot(grid, yhat, "r-")
-    plt.plot(
+    ax.plot(grid, yhat, "r-")
+    ax.plot(
         fitted_vals,
         sqrt_abs_res,
         "o",
@@ -144,23 +160,29 @@ def scale_loc(
         fillstyle="none",
     )
 
-    # Draw Annotations
     for point in top_3:
-        plt.annotate(point, xy=(fitted_vals[point], sqrt_abs_res[point]), color="r")
+        ax.annotate(point, xy=(fitted_vals[point], sqrt_abs_res[point]), color="r")
 
-    # Set Labels
-    plt.title("Scale-Location", fontsize=TITLE_SIZE)
-    plt.xlabel("Fitted values")
-    plt.ylabel(r"$\sqrt{\left|Standardized\ residuals\right|}$")
+    ax.set_title("Scale-Location", fontsize=TITLE_SIZE)
+    ax.set_xlabel("Fitted values")
+    ax.set_ylabel(r"$\sqrt{\left|\mathregular{Standardized\ residuals}\right|}$")
 
-    return plt
+    return fig
 
 
 def resid_lev(
-    lm: Any, lowess_delta: float = LOWESS_DELTA, lowess_it: int = LOWESS_IT
-) -> plt:
+    lm: Any,
+    ax: Optional[mpl.axes.Axes] = None,
+    lowess_delta: float = LOWESS_DELTA,
+    lowess_it: int = LOWESS_IT,
+) -> mpl.figure.Figure:
     """Draw Standardized Residuals vs. Leverage Plot."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.get_figure()
 
     std_resid = lm_stats.standard_residuals
     cooks_d = lm_stats.cooks_d
@@ -176,60 +198,54 @@ def resid_lev(
     # Calculate lowess for smoothing line
     grid, yhat = lowess(std_resid, leverage, it=lowess_it, delta=lowess_delta).T
 
-    # Draw cooks distance contours, scatter and lowess line
-    plt.plot(x, np.sqrt((0.5 * params_count * (1 - x)) / x), "r--")
-    plt.plot(x, np.sqrt((1.0 * params_count * (1 - x)) / x), "r--")
-    plt.plot(x, np.negative(np.sqrt((0.5 * params_count * (1 - x)) / x)), "r--")
-    plt.plot(x, np.negative(np.sqrt((1.0 * params_count * (1 - x)) / x)), "r--")
-    plt.plot(grid, yhat, "r-")
-    plt.plot(
+    # Draw cooks distance contours
+    ax.plot(x, np.sqrt((0.5 * params_count * (1 - x)) / x), "r--")
+    ax.plot(x, np.sqrt((1.0 * params_count * (1 - x)) / x), "r--")
+    ax.plot(x, np.negative(np.sqrt((0.5 * params_count * (1 - x)) / x)), "r--")
+    ax.plot(x, np.negative(np.sqrt((1.0 * params_count * (1 - x)) / x)), "r--")
+
+    # Draw lowess line
+    ax.plot(grid, yhat, "r-")
+
+    # Draw data points
+    ax.plot(
         leverage, std_resid, "o", mec=EDGE_COLOR, markeredgewidth=1, fillstyle="none"
     )
 
     # Limit y axis to actual values (otherwise contour lines disturb scale)
-    plt.ylim(std_resid.min() * 1.1, std_resid.max() * 1.1)
+    ax.set_ylim(std_resid.min() * 1.1, std_resid.max() * 1.1)
 
-    # Draw Annotations
+    # Draw data point annotations
     for point in top_3:
-        plt.annotate(point, xy=(leverage[point], std_resid[point]), color="r")
+        ax.annotate(point, xy=(leverage[point], std_resid[point]), color="r")
 
-    # Set Labels
-    plt.title("Residuals vs. Leverage", fontsize=TITLE_SIZE)
-    plt.xlabel("Leverage")
-    plt.ylabel("Standardized residuals")
+    ax.set_title("Residuals vs. Leverage", fontsize=TITLE_SIZE)
+    ax.set_xlabel("Leverage")
+    ax.set_ylabel("Standardized residuals")
 
-    return plt
+    return fig
 
 
 def plot(
     lm: Any, lowess_delta: float = LOWESS_DELTA, lowess_it: int = LOWESS_IT
-) -> plt:
+) -> mpl.figure.Figure:
     """Plot all 4 charts as a Matrix."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
-    # Draw plot by plot
-    plt.subplot(2, 2, 1)
-    resid_fit(lm_stats, lowess_delta=lowess_delta, lowess_it=lowess_it)
+    fig, axs = plt.subplots(2, 2, figsize=(10, 7))
 
-    plt.subplot(2, 2, 2)
-    q_q(lm_stats)
+    resid_fit(lm_stats, ax=axs[0][0], lowess_delta=lowess_delta, lowess_it=lowess_it)
+    q_q(lm_stats, ax=axs[0][1])
+    scale_loc(lm_stats, ax=axs[1][0], lowess_delta=lowess_delta, lowess_it=lowess_it)
+    resid_lev(lm_stats, ax=axs[1][1], lowess_delta=lowess_delta, lowess_it=lowess_it)
 
-    plt.subplot(2, 2, 3)
-    scale_loc(lm_stats, lowess_delta=lowess_delta, lowess_it=lowess_it)
+    fig.tight_layout(pad=0.5, w_pad=4, h_pad=3.5)
 
-    plt.subplot(2, 2, 4)
-    resid_lev(lm_stats, lowess_delta=lowess_delta, lowess_it=lowess_it)
-
-    # Padding between Charts
-    plt.tight_layout(pad=0.5, w_pad=4, h_pad=4)
-
-    return plt
+    return fig
 
 
 if __name__ == "__main__":
     # Example used for debugging
-    import statsmodels.formula.api as smf
-
     df = sm.datasets.get_rdataset("ames", "openintro").data
     y = np.log10(df["price"])
     x = df["Overall.Qual"] + np.log(df["area"])
@@ -238,7 +254,3 @@ if __name__ == "__main__":
     lm = sm.OLS(y, x).fit()
     fig = plot(lm)
     fig.savefig("test.png")
-
-    lm = smf.ols("np.log10(price) ~ Q('Overall.Qual') + np.log(area)", df).fit()
-    fig2 = plot(lm)
-    fig2.savefig("test2.png")
