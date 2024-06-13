@@ -30,18 +30,27 @@ def fitted_linearmodels_lm() -> IV2SLS:
 
 
 @pytest.mark.parametrize(
-    "fitted_lm", [fitted_statsmodels_lm(), fitted_linearmodels_lm()]
+    ("lm_type", "lm_fitted"),
+    [
+        ("statsmodels", fitted_statsmodels_lm()),
+        ("linearmodels", fitted_linearmodels_lm()),
+    ],
 )
 def test_plot_generates_expected_image(
-    fitted_lm: Union[sm.OLS, IV2SLS], tmpdir: Path
+    lm_type: str, lm_fitted: Union[sm.OLS, IV2SLS]
 ) -> None:
+    base_path = Path(__file__).parent
+    filename = base_path / f"test_plot_actual_{lm_type}.jpg"
+
     plt.style.use("seaborn-v0_8")
     plt.figure(figsize=(10, 7))
-    fig = plot(fitted_lm)
 
-    fig.savefig(tmpdir / "test_plot_actual.jpg")
-    actual_size = Path(tmpdir / "test_plot_actual.jpg").stat().st_size
+    # Using lowess_delta leads to barely visible differences between plot of
+    # linearmodels and statsmodels, therefore we set it to 0 during testing
+    fig = plot(lm_fitted, lowess_delta=0)
+    fig.savefig(filename)
 
-    expected_size = (Path(__file__).parent / "test_plot_expected.jpg").stat().st_size
+    actual_size = Path(filename).stat().st_size
+    expected_size = Path(base_path / "test_plot_expected.jpg").stat().st_size
 
-    assert actual_size == expected_size
+    assert actual_size == expected_size, lm_type

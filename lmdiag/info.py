@@ -108,7 +108,7 @@ def print_desc(plot_name: str) -> None:
         wrapper = textwrap.TextWrapper(
             initial_indent=f"{key:>12}: ", width=79, subsequent_indent=" " * 14
         )
-        print(wrapper.fill(val))  # noqa: T201
+        print(wrapper.fill(val), end="\n\n")  # noqa: T201
 
 
 def info(plot_names: Union[tuple[str], list[str], None] = None) -> None:
@@ -118,15 +118,11 @@ def info(plot_names: Union[tuple[str], list[str], None] = None) -> None:
     """
     # If no argument, print all descriptions
     if not plot_names:
-        for d in desc:
-            print_desc(d)
-            print()  # noqa: T201
-        return
+        plot_names = [str(k) for k in desc]
 
     # Else try to print the description
     for plot_name in plot_names:
         if plot_name in desc:
             print_desc(plot_name)
-            print()  # noqa: T201
         else:
             print("Unknown plot. Run lmdiag.info() for all available plots")  # noqa: T201

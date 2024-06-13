@@ -1,13 +1,8 @@
-from typing import TYPE_CHECKING
-
 import linearmodels
 import numpy as np
 import pandas as pd
 
 from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
-
-if TYPE_CHECKING:
-    import linearmodels
 
 
 class LinearmodelsStats(StatsBase):

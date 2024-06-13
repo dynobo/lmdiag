@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -15,6 +17,13 @@ class StatsmodelsStats(StatsBase):
         super().__init__()
         self._lm = lm
         self._cache_properties = cache
+        self.__ols_influence: Union[OLSInfluence, None] = None
+
+    @property
+    def _ols_influence(self) -> OLSInfluence:
+        if self.__ols_influence is None:
+            self.__ols_influence = OLSInfluence(self._lm)
+        return self.__ols_influence
 
     @optionally_cached_property
     def residuals(self) -> np.ndarray:
@@ -32,18 +41,15 @@ class StatsmodelsStats(StatsBase):
 
     @optionally_cached_property
     def standard_residuals(self) -> np.typing.ArrayLike:
-        vals = OLSInfluence(self._lm).summary_frame()
-        return vals["standard_resid"].values
+        return self._ols_influence.resid_studentized_internal
 
     @optionally_cached_property
     def cooks_d(self) -> np.typing.ArrayLike:
-        vals = OLSInfluence(self._lm).summary_frame()
-        return vals["cooks_d"].values
+        return self._ols_influence.cooks_distance[0]
 
     @optionally_cached_property
     def leverage(self) -> np.typing.ArrayLike:
-        influence = self._lm.get_influence()
-        return influence.hat_matrix_diag
+        return self._ols_influence.hat_matrix_diag
 
     @optionally_cached_property
     def params_count(self) -> int:

@@ -24,11 +24,11 @@ classifiers = [
 ]
 dependencies = ["matplotlib", "numpy", "pandas", "scipy", "statsmodels"]
 optional-dependencies = { dev = [
-    "ruff",
+    "linearmodels",
     "mypy",
     "pre-commit",
     "pytest",
-    "linearmodels",
+    "ruff",
 ] }
 
 license = { text = "MIT" }
