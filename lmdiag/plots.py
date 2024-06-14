@@ -1,4 +1,4 @@
-"""Module for Diagnosis Plots of Linear Regression Models."""
+"""Module for diagnosis plots of linear regression models."""
 
 from typing import Any, Optional
 
@@ -25,8 +25,8 @@ LOWESS_IT = 2
 FittedLinearModel = Any
 
 
-def init_lm_stats(lm: FittedLinearModel) -> StatsBase:
-    """Check if input parameter is an linear regression model."""
+def _init_lm_stats(lm: FittedLinearModel) -> StatsBase:
+    """Gather statistics depending on Linear Model type."""
     if isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
         from lmdiag.lm_stats.statsmodels import StatsmodelsStats
 
@@ -37,7 +37,10 @@ def init_lm_stats(lm: FittedLinearModel) -> StatsBase:
 
         return LinearmodelsStats(lm)
 
-    raise TypeError("Model type not (yet) supported.")
+    raise TypeError(
+        "Model type not (yet) supported. Currently supported are linear "
+        "models from `statsmodels` and `linearmodels` packages."
+    )
 
 
 def resid_fit(
@@ -46,8 +49,24 @@ def resid_fit(
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
-    """Draw Residuals vs. Fitted Values Plot."""
-    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+    """Draw Residuals vs. Fitted Values Plot.
+
+    For detailed explanation fo the lowess parameters, see:
+    https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
+
+    Args:
+        lm: A fitted linear model of a supported type.
+        ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
+            created.
+        lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
+            reduce the accuracy of the smoothing line. Defaults to 0.005. See:
+        lowess_it: Lower values speed up plotting, but reduce the accuracy of the
+            smoothing line. Defaults to 2.
+
+    Returns:
+        Figure of the plot.
+    """
+    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -82,8 +101,17 @@ def resid_fit(
 
 
 def q_q(lm: FittedLinearModel, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
-    """Draw Q-Q-Plot."""
-    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+    """Draw Q-Q-Plot.
+
+    Args:
+        lm: A fitted linear model of a supported type.
+        ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
+            created.
+
+    Returns:
+        Figure of the plot.
+    """
+    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -135,8 +163,24 @@ def scale_loc(
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
-    """Draw Scale-Location Plot."""
-    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+    """Draw Scale-Location Plot.
+
+    For detailed explanation fo the lowess parameters, see:
+    https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
+
+    Args:
+        lm: A fitted linear model of a supported type.
+        ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
+            created.
+        lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
+            reduce the accuracy of the smoothing line. Defaults to 0.005. See:
+        lowess_it: Lower values speed up plotting, but reduce the accuracy of the
+            smoothing line. Defaults to 2.
+
+    Returns:
+        Figure of the plot.
+    """
+    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -179,8 +223,24 @@ def resid_lev(
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
-    """Draw Standardized Residuals vs. Leverage Plot."""
-    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+    """Draw Standardized Residuals vs. Leverage Plot.
+
+    For detailed explanation fo the lowess parameters, see:
+    https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
+
+    Args:
+        lm: A fitted linear model of a supported type.
+        ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
+            created.
+        lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
+            reduce the accuracy of the smoothing line. Defaults to 0.005. See:
+        lowess_it: Lower values speed up plotting, but reduce the accuracy of the
+            smoothing line. Defaults to 2.
+
+    Returns:
+        Figure of the plot.
+    """
+    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -234,8 +294,22 @@ def plot(
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
-    """Plot all 4 charts as a Matrix."""
-    lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
+    """Plot all 4 charts as a Matrix.
+
+    For detailed explanation fo the lowess parameters, see:
+    https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
+
+    Args:
+        lm: A fitted linear model of a supported type.
+        lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
+            reduce the accuracy of the smoothing line. Defaults to 0.005. See:
+        lowess_it: Lower values speed up plotting, but reduce the accuracy of the
+            smoothing line. Defaults to 2.
+
+    Returns:
+        Figure of the plot.
+    """
+    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
 
     fig, axs = plt.subplots(2, 2, figsize=(10, 7))
 

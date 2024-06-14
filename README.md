@@ -87,7 +87,7 @@ lmdiag.plot(lm, lowess_it=1, lowess_delta=0.02)
 ```
 
 (For details about these parameters, see
-[statsmodels docs](<](https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html)>).)
+[statsmodels docs](https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html).)
 
 #### 2. Change matplotlib backend
 

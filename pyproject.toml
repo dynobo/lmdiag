@@ -100,3 +100,6 @@ ignore = [
     "RET504", # Unnecessary assignment before return statement
     "S101",   # Use of assert detected
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
