@@ -21,8 +21,11 @@ EDGE_COLOR = (0, 0, 0, 0.6)
 LOWESS_DELTA = 0.005
 LOWESS_IT = 2
 
+# ONHOLD: Add 'TypeAlias' when Python 3.10 is minimum requirement
+FittedLinearModel = Any
 
-def init_lm_stats(lm: Any) -> StatsBase:
+
+def init_lm_stats(lm: FittedLinearModel) -> StatsBase:
     """Check if input parameter is an linear regression model."""
     if isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
         from lmdiag.lm_stats.statsmodels import StatsmodelsStats
@@ -38,7 +41,7 @@ def init_lm_stats(lm: Any) -> StatsBase:
 
 
 def resid_fit(
-    lm: Any,
+    lm: FittedLinearModel,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -78,7 +81,7 @@ def resid_fit(
     return fig
 
 
-def q_q(lm: Any, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
+def q_q(lm: FittedLinearModel, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
     """Draw Q-Q-Plot."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
 
@@ -127,7 +130,7 @@ def q_q(lm: Any, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
 
 
 def scale_loc(
-    lm: Any,
+    lm: FittedLinearModel,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -171,7 +174,7 @@ def scale_loc(
 
 
 def resid_lev(
-    lm: Any,
+    lm: FittedLinearModel,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -227,7 +230,9 @@ def resid_lev(
 
 
 def plot(
-    lm: Any, lowess_delta: float = LOWESS_DELTA, lowess_it: int = LOWESS_IT
+    lm: FittedLinearModel,
+    lowess_delta: float = LOWESS_DELTA,
+    lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
     """Plot all 4 charts as a Matrix."""
     lm_stats = lm if isinstance(lm, StatsBase) else init_lm_stats(lm)
