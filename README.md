@@ -16,32 +16,28 @@ available documentation.
 
 ## Usage
 
-The plots need a
-[fitted Linear Regression Model](https://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.OLS.fit.html)
-created by `statsmodels` as input.
+lmdiag generates plots for _fitted_ linear regression models from
+[`statsmodels`](https://www.statsmodels.org/stable/index.html) or
+[`linearmodels`](https://bashtage.github.io/linearmodels/doc/index.html).
 
-Fitted Model from
-[`linearmodels`](https://bashtage.github.io/linearmodels/doc/index.html) should also
-work, however, that's not tested very well.
+You can find many examples in
+[this jupyter notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb).
 
 ### Example
-
-(Find more examples in
-[this jupyter notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb))
 
 ```python
 import numpy as np
 import statsmodels.api as sm
 import lmdiag
 
-# Generate sample model
+# Fit model with random sample data
 np.random.seed(20)
 predictor = np.random.normal(size=30, loc=20, scale=3)
 response = 5 + 5 * predictor + np.random.normal(size=30)
 X = sm.add_constant(predictor)
 lm = sm.OLS(response, X).fit()
 
-# Plot chart matrix (and enlarge figure)
+# Plot lmdiag facet chart
 fig = lmdiag.plot(lm)
 fig.show()
 ```
@@ -64,7 +60,7 @@ fig.show()
 
   `lmdiag.resid_lev(lm)`
 
-- Print useful descriptions for interpretations:
+- Print description to aid plot interpretation:
 
   `lmdiag.info()` (for all plots)
 
@@ -75,18 +71,18 @@ fig.show()
 Plotting models fitted on large datasets can be slow. There are some things you can try
 to speed it up:
 
-#### 1. Tune LOWESS-settings
+#### 1. Tune LOWESS-parameters
 
-The smoothing lines (red) are calculated using the "Locally Weighted Scatterplot
-Smoothing" algorithms, which can be quite expensive. Try a _lower_ value for `lowess_it`
+The red smoothing lines are calculated using the "Locally Weighted Scatterplot
+Smoothing" algorithm, which can be quite expensive. Try a _lower_ value for `lowess_it`
 and a _higher_ value for `lowess_delta` to gain speed at the cost of accuracy:
 
 ```python
 lmdiag.plot(lm, lowess_it=1, lowess_delta=0.02)
-# Note: lmdiag's defaults are lowess_it=2, lowess_delta=0.005
+# Defaults are: lowess_it=2, lowess_delta=0.005
 ```
 
-(For details about these parameters, see
+(For details about those parameters, see
 [statsmodels docs](https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html).)
 
 #### 2. Change matplotlib backend
@@ -107,7 +103,7 @@ matplotlib.use('agg')
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-pip install '.[dev]'
+pip install -e '.[dev]'
 pre-commit install
 ```
 
