@@ -4,6 +4,9 @@ import numpy as np
 import pytest
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
+from sklearn.linear_model import LinearRegression
+
+from lmdiag.lm_stats.wrapper import LM
 
 SAMPLE_DATA = sm.datasets.longley.load()
 
@@ -19,7 +22,8 @@ def statsmodels_factory() -> Callable:
     def _statsmodels_lm(x_dims: int) -> sm.OLS:
         X, y = _get_sample_data(x_dims=x_dims)
         X = sm.add_constant(X)
-        return sm.OLS(y, X).fit()
+        lm = sm.OLS(y, X).fit()
+        return lm
 
     return _statsmodels_lm
 
@@ -29,6 +33,17 @@ def linearmodels_factory() -> Callable:
     def _linearmodels_lm(x_dims: int) -> IV2SLS:
         X, y = _get_sample_data(x_dims=x_dims)
         X = sm.add_constant(X)
-        return IV2SLS(y, X, None, None).fit(cov_type="unadjusted")
+        lm = IV2SLS(y, X, None, None).fit(cov_type="unadjusted")
+        return lm
 
     return _linearmodels_lm
+
+
+@pytest.fixture(scope="session")
+def sklearn_factory() -> Callable:
+    def _sklearn_lm(x_dims: int) -> LM:
+        X, y = _get_sample_data(x_dims=x_dims)
+        lm = LinearRegression().fit(X, y)
+        return LM(model=lm, X=X, y=y)
+
+    return _sklearn_lm

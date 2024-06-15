@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from lmdiag.lm_stats.linearmodels import LinearmodelsStats
+from lmdiag.lm_stats.sklearn import SklearnStats
 from lmdiag.lm_stats.statsmodels import StatsmodelsStats
 
 
@@ -24,11 +25,13 @@ def test_lm_stats_modules(
     attr: str,
     statsmodels_factory: Callable,
     linearmodels_factory: Callable,
+    sklearn_factory: Callable,
     x_dims: int,
 ) -> None:
     model_stats_to_compare = [
         StatsmodelsStats(statsmodels_factory(x_dims=x_dims)),
         LinearmodelsStats(linearmodels_factory(x_dims=x_dims)),
+        SklearnStats(sklearn_factory(x_dims=x_dims)),
     ]
 
     for stats_a, stats_b in itertools.combinations(model_stats_to_compare, 2):

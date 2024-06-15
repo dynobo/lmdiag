@@ -9,11 +9,17 @@ import statsmodels.api as sm
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from lmdiag.lm_stats.base import StatsBase
+from lmdiag.lm_stats.wrapper import LM
 
 try:
     import linearmodels
 except ImportError:
     linearmodels = None
+
+try:
+    import sklearn
+except ImportError:
+    sklearn = None
 
 TITLE_SIZE = 15
 EDGE_COLOR = (0, 0, 0, 0.6)
@@ -36,6 +42,15 @@ def _init_lm_stats(lm: FittedLinearModel) -> StatsBase:
         from lmdiag.lm_stats.linearmodels import LinearmodelsStats
 
         return LinearmodelsStats(lm)
+
+    if (
+        isinstance(lm, LM)
+        and sklearn is not None
+        and isinstance(lm.model, sklearn.linear_model.LinearRegression)
+    ):
+        from lmdiag.lm_stats.sklearn import SklearnStats
+
+        return SklearnStats(lm)
 
     raise TypeError(
         "Model type not (yet) supported. Currently supported are linear "

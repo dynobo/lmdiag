@@ -30,6 +30,7 @@ optional-dependencies = { dev = [
     "pre-commit",
     "pytest",
     "ruff",
+    "scikit-learn",
 ] }
 
 license = { text = "MIT" }

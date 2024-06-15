@@ -15,5 +15,5 @@ class LM:
     """
 
     model: Any
-    x: np.ndarray
+    X: np.ndarray
     y: np.ndarray

@@ -9,10 +9,13 @@ from lmdiag import plot
 
 @pytest.mark.parametrize(
     "lm_type",
-    ["statsmodels", "linearmodels"],
+    ["statsmodels", "linearmodels", "sklearn"],
 )
 def test_plot_generates_expected_image(
-    lm_type: str, statsmodels_factory: Callable, linearmodels_factory: Callable
+    lm_type: str,
+    statsmodels_factory: Callable,
+    linearmodels_factory: Callable,
+    sklearn_factory: Callable,
 ) -> None:
     base_path = Path(__file__).parent
     filename = base_path / f"test_plot_actual_{lm_type}.jpg"
@@ -24,6 +27,8 @@ def test_plot_generates_expected_image(
         lm_fitted = statsmodels_factory(x_dims=5)
     elif lm_type == "linearmodels":
         lm_fitted = linearmodels_factory(x_dims=5)
+    elif lm_type == "sklearn":
+        lm_fitted = sklearn_factory(x_dims=5)
     else:
         raise ValueError(f"Unsupported lm_type: {lm_type}")
 

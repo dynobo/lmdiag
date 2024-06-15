@@ -1,32 +1,37 @@
-import linearmodels
 import numpy as np
 
 from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
+from lmdiag.lm_stats.wrapper import LM
 
 
-class LinearmodelsStats(StatsBase):
+class SklearnStats(StatsBase):
     def __init__(
         self,
-        lm: linearmodels.iv.results.OLSResults,
+        lm: LM,
         cache: bool = True,
     ) -> None:
         super().__init__()
-        self._lm = lm
+        self._lm = lm.model
+        self._X = lm.X
+        self._y = lm.y
         self._cache_properties = cache
 
     @optionally_cached_property
     def residuals(self) -> np.ndarray:
-        return self._lm.resids.values
+        return self._y - self.fitted_values
 
     @optionally_cached_property
     def fitted_values(self) -> np.ndarray:
-        return self._lm.fitted_values.squeeze().values
+        return self._lm.predict(self._X)
 
     @optionally_cached_property
     def standard_residuals(self) -> np.ndarray:
         residuals = self.residuals
         h_ii = self.leverage
-        var_e = np.sqrt(self._lm.resid_ss / (self._lm.nobs - self._lm.df_model))
+        resid_ss: np.ndarray = np.sum(residuals**2)
+        nobs = len(self._y)
+        df_model = self.params_count
+        var_e = np.sqrt(resid_ss / (nobs - df_model))
         standard_error = var_e * np.sqrt(1 - h_ii)
         return residuals / standard_error
 
@@ -39,12 +44,16 @@ class LinearmodelsStats(StatsBase):
 
     @optionally_cached_property
     def leverage(self) -> np.ndarray:
-        X = self._lm.model._x
+        X = self._X
+        # add constant, like sm.add_constant() does in linearmodels' leverage()
+        X = np.column_stack((np.ones(X.shape[0]), X))
         XtX_inv = np.linalg.inv(np.dot(X.T, X))
         h_ii = np.einsum("ij,jk,ik->i", X, XtX_inv, X)
         return h_ii
 
     @optionally_cached_property
     def params_count(self) -> int:
-        # TODO: Rename method to degree_of_freedom?
-        return self._lm.df_model
+        params_count = len(self._lm.coef_)
+        if self._lm.fit_intercept:
+            params_count += 1
+        return params_count
