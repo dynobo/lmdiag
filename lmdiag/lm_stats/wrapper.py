@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Any
 
 import numpy as np
 
@@ -13,6 +14,6 @@ class LM:
         y: 1-D numpy array with response of training data.
     """
 
-    model: any
+    model: Any
     x: np.ndarray
     y: np.ndarray

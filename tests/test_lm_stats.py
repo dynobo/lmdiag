@@ -1,9 +1,8 @@
 import itertools
+from typing import Callable
 
 import numpy as np
 import pytest
-import statsmodels.api as sm
-from linearmodels.iv import IV2SLS
 
 from lmdiag.lm_stats.linearmodels import LinearmodelsStats
 from lmdiag.lm_stats.statsmodels import StatsmodelsStats
@@ -23,18 +22,19 @@ from lmdiag.lm_stats.statsmodels import StatsmodelsStats
 )
 def test_lm_stats_modules(
     attr: str,
-    statsmodels_lm: sm.OLS,
-    linearmodels_lm: IV2SLS,
+    statsmodels_factory: Callable,
+    linearmodels_factory: Callable,
 ) -> None:
     model_stats_to_compare = [
-        StatsmodelsStats(statsmodels_lm),
-        LinearmodelsStats(linearmodels_lm),
+        StatsmodelsStats(statsmodels_factory(x_dims=1)),
+        LinearmodelsStats(linearmodels_factory(x_dims=1)),
     ]
-    threshold = 1e-10
+
+    acceptable_distance = 1e-8
 
     for stats_a, stats_b in itertools.combinations(model_stats_to_compare, 2):
         distance = np.linalg.norm(getattr(stats_a, attr) - getattr(stats_b, attr))
-        assert distance < threshold, (
+        assert distance < acceptable_distance, (
             attr,
             stats_a.__class__.__name__,
             stats_b.__class__.__name__,

@@ -99,6 +99,7 @@ ignore = [
     "ISC001", # Rule conflicts with ruff's formatter
     "RET504", # Unnecessary assignment before return statement
     "S101",   # Use of assert detected
+    "N806",   # Variable in function should be lowercase
 ]
 
 [tool.ruff.lint.pydocstyle]

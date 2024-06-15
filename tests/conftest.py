@@ -1,27 +1,34 @@
+from typing import Callable
+
 import numpy as np
 import pytest
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
 
-def _get_predictor_response() -> tuple[np.ndarray, np.ndarray]:
-    np.random.seed(20)
-    predictor = np.random.normal(size=30, loc=20, scale=3)
-    response = 5 + 5 * predictor + np.random.normal(size=30)
-
-    X = np.column_stack((predictor, predictor**2))
-    return X, response
+SAMPLE_DATA = sm.datasets.longley.load()
 
 
-@pytest.fixture(scope="session")
-def statsmodels_lm() -> sm.OLS:
-    predictor, response = _get_predictor_response()
-    x = sm.add_constant(predictor)
-    return sm.OLS(response, x).fit()
+def _get_sample_data(x_dims: int) -> tuple[np.ndarray, np.ndarray]:
+    y = SAMPLE_DATA.endog.values
+    X = SAMPLE_DATA.exog.values[:, :x_dims]
+    return X, y
 
 
 @pytest.fixture(scope="session")
-def linearmodels_lm() -> IV2SLS:
-    predictor, response = _get_predictor_response()
-    x = sm.add_constant(predictor)
-    return IV2SLS(response, x, None, None).fit(cov_type="unadjusted")
+def statsmodels_factory() -> Callable:
+    def _statsmodels_lm(x_dims: int) -> sm.OLS:
+        X, y = _get_sample_data(x_dims=x_dims)
+        X = sm.add_constant(X)
+        return sm.OLS(y, X).fit()
 
+    return _statsmodels_lm
+
+
+@pytest.fixture(scope="session")
+def linearmodels_factory() -> Callable:
+    def _linearmodels_lm(x_dims: int) -> IV2SLS:
+        X, y = _get_sample_data(x_dims=x_dims)
+        X = sm.add_constant(X)
+        return IV2SLS(y, X, None, None).fit(cov_type="unadjusted")
+
+    return _linearmodels_lm
