@@ -327,9 +327,9 @@ if __name__ == "__main__":
     # Example used for debugging
     df = sm.datasets.get_rdataset("ames", "openintro").data
     y = np.log10(df["price"])
-    x = df["Overall.Qual"] + np.log(df["area"])
-    x = sm.add_constant(x)
+    X = df["Overall.Qual"] + np.log(df["area"])
+    X = sm.add_constant(X)
 
-    lm = sm.OLS(y, x).fit()
+    lm = sm.OLS(y, X).fit()
     fig = plot(lm)
     fig.savefig("test.png")

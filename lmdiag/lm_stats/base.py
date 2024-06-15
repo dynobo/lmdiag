@@ -27,7 +27,9 @@ class StatsBase(ABC):
 
     @optionally_cached_property
     @abstractmethod
-    def fitted_values(self) -> np.ndarray: ...
+    def fitted_values(self) -> np.ndarray:
+        """Estimated y-hat values of training data, after applying inverse link func."""
+        ...
 
     @optionally_cached_property
     @abstractmethod

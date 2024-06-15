@@ -34,6 +34,7 @@ class StatsmodelsStats(StatsBase):
     def fitted_values(self) -> np.ndarray:
         fitted = self._lm.fittedvalues
         # Transform series to 1-d array, if necessary
+        # TODO: Can this be done more elegantly?
         if isinstance(fitted, pd.Series):
             fitted = fitted.values
         return fitted

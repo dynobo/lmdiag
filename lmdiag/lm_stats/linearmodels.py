@@ -31,31 +31,31 @@ class LinearmodelsStats(StatsBase):
 
     @optionally_cached_property
     def standard_residuals(self) -> np.ndarray:
-        x = self._lm.model._x[:, 1]
-        mean_x = np.mean(x)
-        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
+        X = self._lm.model._x[:, 1]
+        mean_x = np.mean(X)
+        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
         residuals = self.residuals
-        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
+        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
         var_e = np.sqrt(self._lm.resid_ss / (self._lm.nobs - 2))
         se_regression = var_e * ((1 - h_ii) ** 0.5)
         return residuals / se_regression
 
     @optionally_cached_property
     def cooks_d(self) -> np.ndarray:
-        x = self._lm.model._x[:, 1]
-        mean_x = np.mean(x)
-        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
-        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
+        X = self._lm.model._x[:, 1]
+        mean_x = np.mean(X)
+        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
+        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
         cooks_d2 = self.standard_residuals**2 / self.params_count
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
     @optionally_cached_property
     def leverage(self) -> np.ndarray:
-        x = self._lm.model._x[:, 1]
-        mean_x = np.mean(x)
-        diff_mean_sqr = np.dot((x - mean_x), (x - mean_x))
-        h_ii = (x - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
+        X = self._lm.model._x[:, 1]
+        mean_x = np.mean(X)
+        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
+        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
         return h_ii
 
     @optionally_cached_property

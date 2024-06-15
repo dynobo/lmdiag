@@ -11,12 +11,12 @@ desc = {
         "Name": "Residuals vs. Fitted",
         "Method": "lmdiag.resid_fit(lm)",
         "x-Axis": (
-            "Fitted Values (The dependent variable of your model; "
-            "What you threw in statsmodels OLS as 1st parameter)"
+            "Fitted Values (The predicted y-hat values of the data used to train the "
+            "model, applied on the inverse of the link function)"
         ),
         "y-Axis": (
             "Residuals (The 'error' of the model; "
-            "Distance to the fitted regression line)"
+            "Distances of the y-hat values to the fitted regression line)"
         ),
         "Description": (
             "It's purpose is to identify non-linear patterns in the residuals. "
@@ -50,8 +50,8 @@ desc = {
         "Name": "Scale-Location",
         "Method": "lm.scale_loc(lm)",
         "x-Axis": (
-            "Fitted Values (The dependent variable of your model; "
-            "What you threw in statsmodels OLS as 1st parameter)"
+            "Fitted Values (The predicted y-hat values of the data used to train the "
+            "model, applied on the inverse of the link function)"
         ),
         "y-Axis": "Square root of the absolute value of the Standardized Residuals.",
         "Description": (
@@ -75,7 +75,7 @@ desc = {
         ),
         "y-Axis": (
             "Residuals (The 'error' of the model; "
-            "Distance to the fitted regression line)"
+            "Distances of the y values to the fitted regression line)"
         ),
         "dashed-Lines": "Cook's Distance, 0.5 (inner) and 1 (outer).",
         "Description": (

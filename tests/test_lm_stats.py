@@ -8,7 +8,7 @@ from lmdiag.lm_stats.linearmodels import LinearmodelsStats
 from lmdiag.lm_stats.statsmodels import StatsmodelsStats
 
 
-# TODO: Add test for 3D X
+@pytest.mark.parametrize("x_dims", [1])
 @pytest.mark.parametrize(
     "attr",
     [
@@ -24,10 +24,11 @@ def test_lm_stats_modules(
     attr: str,
     statsmodels_factory: Callable,
     linearmodels_factory: Callable,
+    x_dims: int,
 ) -> None:
     model_stats_to_compare = [
-        StatsmodelsStats(statsmodels_factory(x_dims=1)),
-        LinearmodelsStats(linearmodels_factory(x_dims=1)),
+        StatsmodelsStats(statsmodels_factory(x_dims=x_dims)),
+        LinearmodelsStats(linearmodels_factory(x_dims=x_dims)),
     ]
 
     acceptable_distance = 1e-8
