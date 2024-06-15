@@ -1,7 +1,6 @@
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import OLSInfluence, summary_table
 
@@ -32,12 +31,7 @@ class StatsmodelsStats(StatsBase):
 
     @optionally_cached_property
     def fitted_values(self) -> np.ndarray:
-        fitted = self._lm.fittedvalues
-        # Transform series to 1-d array, if necessary
-        # TODO: Can this be done more elegantly?
-        if isinstance(fitted, pd.Series):
-            fitted = fitted.values
-        return fitted
+        return self._lm.fittedvalues
 
     @optionally_cached_property
     def standard_residuals(self) -> np.ndarray:

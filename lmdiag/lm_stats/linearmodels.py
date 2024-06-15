@@ -1,6 +1,5 @@
 import linearmodels
 import numpy as np
-import pandas as pd
 
 from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
 
@@ -17,46 +16,32 @@ class LinearmodelsStats(StatsBase):
 
     @optionally_cached_property
     def residuals(self) -> np.ndarray:
-        return self._lm.resids
+        return self._lm.resids.values
 
     @optionally_cached_property
     def fitted_values(self) -> np.ndarray:
-        fitted = self._lm.fitted_values
-
-        # Transform series to 1-d array, if necessary
-        if isinstance(fitted, pd.core.frame.DataFrame):
-            fitted = fitted.values[:, 0]
-
-        return fitted
+        return self._lm.fitted_values.squeeze().values
 
     @optionally_cached_property
     def standard_residuals(self) -> np.ndarray:
-        X = self._lm.model._x[:, 1]
-        mean_x = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
         residuals = self.residuals
-        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
-        var_e = np.sqrt(self._lm.resid_ss / (self._lm.nobs - 2))
-        se_regression = var_e * ((1 - h_ii) ** 0.5)
-        return residuals / se_regression
+        h_ii = self.leverage
+        var_e = np.sqrt(self._lm.resid_ss / (self._lm.nobs - self._lm.df_model))
+        standard_error = var_e * np.sqrt(1 - h_ii)
+        return residuals / standard_error
 
     @optionally_cached_property
     def cooks_d(self) -> np.ndarray:
-        X = self._lm.model._x[:, 1]
-        mean_x = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
-        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
+        h_ii = self.leverage
         cooks_d2 = self.standard_residuals**2 / self.params_count
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
     @optionally_cached_property
     def leverage(self) -> np.ndarray:
-        X = self._lm.model._x[:, 1]
-        mean_x = np.mean(X)
-        diff_mean_sqr = np.dot((X - mean_x), (X - mean_x))
-        h_ii = (X - mean_x) ** 2 / diff_mean_sqr + (1 / self._lm.nobs)
-        return h_ii
+        X = self._lm.model._x
+        XtX_inv = np.linalg.inv(np.dot(X.T, X))
+        return np.einsum("ij,jk,ik->i", X, XtX_inv, X)
 
     @optionally_cached_property
     def params_count(self) -> int:

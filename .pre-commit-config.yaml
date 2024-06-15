@@ -23,7 +23,7 @@ repos:
         name: ruff check
         stages: [commit]
         language: system
-        entry: ruff check .
+        entry: ruff check --fix .
         pass_filenames: false
       - id: ruff-format
         name: ruff format

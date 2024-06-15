@@ -21,9 +21,9 @@ def test_plot_generates_expected_image(
     plt.figure(figsize=(10, 7))
 
     if lm_type == "statsmodels":
-        lm_fitted = statsmodels_factory(x_dims=1)
+        lm_fitted = statsmodels_factory(x_dims=5)
     elif lm_type == "linearmodels":
-        lm_fitted = linearmodels_factory(x_dims=1)
+        lm_fitted = linearmodels_factory(x_dims=5)
     else:
         raise ValueError(f"Unsupported lm_type: {lm_type}")
 

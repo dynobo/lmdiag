@@ -8,7 +8,7 @@ from lmdiag.lm_stats.linearmodels import LinearmodelsStats
 from lmdiag.lm_stats.statsmodels import StatsmodelsStats
 
 
-@pytest.mark.parametrize("x_dims", [1])
+@pytest.mark.parametrize("x_dims", [1, 3, 5])
 @pytest.mark.parametrize(
     "attr",
     [
@@ -31,11 +31,17 @@ def test_lm_stats_modules(
         LinearmodelsStats(linearmodels_factory(x_dims=x_dims)),
     ]
 
-    acceptable_distance = 1e-8
-
     for stats_a, stats_b in itertools.combinations(model_stats_to_compare, 2):
-        distance = np.linalg.norm(getattr(stats_a, attr) - getattr(stats_b, attr))
-        assert distance < acceptable_distance, (
+        vector_a = getattr(stats_a, attr)
+        vector_b = getattr(stats_b, attr)
+
+        assert type(vector_a) == type(vector_b), (
+            attr,
+            stats_a.__class__.__name__,
+            stats_b.__class__.__name__,
+        )
+
+        assert np.allclose(vector_a, vector_b, atol=1e-10), (
             attr,
             stats_a.__class__.__name__,
             stats_b.__class__.__name__,
