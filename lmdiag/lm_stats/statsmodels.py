@@ -31,8 +31,7 @@ class StatsmodelsStats(StatsBase):
         return data[:, 8]
 
     @optionally_cached_property
-    def fitted_values(self) -> pd.Series:
-        """Return 1-D numpy array with fitted values."""
+    def fitted_values(self) -> np.ndarray:
         fitted = self._lm.fittedvalues
         # Transform series to 1-d array, if necessary
         if isinstance(fitted, pd.Series):
@@ -40,15 +39,15 @@ class StatsmodelsStats(StatsBase):
         return fitted
 
     @optionally_cached_property
-    def standard_residuals(self) -> np.typing.ArrayLike:
+    def standard_residuals(self) -> np.ndarray:
         return self._ols_influence.resid_studentized_internal
 
     @optionally_cached_property
-    def cooks_d(self) -> np.typing.ArrayLike:
+    def cooks_d(self) -> np.ndarray:
         return self._ols_influence.cooks_distance[0]
 
     @optionally_cached_property
-    def leverage(self) -> np.typing.ArrayLike:
+    def leverage(self) -> np.ndarray:
         return self._ols_influence.hat_matrix_diag
 
     @optionally_cached_property
