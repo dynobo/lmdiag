@@ -1,7 +1,7 @@
 import linearmodels
 import numpy as np
 
-from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
+from lmdiag.statistics.base import StatsBase, optionally_cached_property
 
 
 class LinearmodelsStats(StatsBase):

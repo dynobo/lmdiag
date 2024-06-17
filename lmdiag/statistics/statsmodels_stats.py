@@ -4,7 +4,7 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import OLSInfluence, summary_table
 
-from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
+from lmdiag.statistics.base import StatsBase, optionally_cached_property
 
 
 class StatsmodelsStats(StatsBase):

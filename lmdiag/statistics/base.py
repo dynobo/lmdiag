@@ -3,7 +3,7 @@ from functools import cached_property, wraps
 from typing import Any, Callable
 
 import numpy as np
-from scipy.stats import norm
+from scipy import special
 
 
 def optionally_cached_property(func: Callable) -> property:
@@ -55,4 +55,6 @@ class StatsBase(ABC):
     def normalized_quantiles(self) -> np.ndarray:
         val_count = len(self.fitted_values)
         positions = (np.arange(1.0, val_count + 1)) / (val_count + 1.0)
-        return norm.ppf(positions)
+        # ndtri is used under the hood by ppf, but is much faster. It skips validation
+        # and processing the loc and scale arguments, which are not needed here.
+        return special.ndtri(positions)

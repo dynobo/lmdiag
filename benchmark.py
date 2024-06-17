@@ -5,11 +5,12 @@ import statsmodels as sm
 import statsmodels.api as sma
 
 import lmdiag
+import lmdiag.statistics
 
 df = sma.datasets.get_rdataset("ames", "openintro").data
 lm = sm.formula.api.ols("np.log10(price) ~ Q('Overall.Qual') + np.log(area)", df).fit()
 
-lm_stats = lmdiag.plots._init_lm_stats(lm)
+lm_stats = lmdiag.statistics.init_stats(lm)
 
 
 if __name__ == "__main__":

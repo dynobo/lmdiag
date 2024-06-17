@@ -1,19 +1,21 @@
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
-from lmdiag.lm_stats.base import StatsBase, optionally_cached_property
-from lmdiag.lm_stats.wrapper import LM
+from lmdiag.statistics.base import StatsBase, optionally_cached_property
 
 
 class SklearnStats(StatsBase):
     def __init__(
         self,
-        lm: LM,
+        lm: LinearRegression,
+        x: np.ndarray,
+        y: np.ndarray,
         cache: bool = True,
     ) -> None:
         super().__init__()
-        self._lm = lm.model
-        self._X = lm.X
-        self._y = lm.y
+        self._lm = lm
+        self._X = x
+        self._y = y
         self._cache_properties = cache
 
     @optionally_cached_property

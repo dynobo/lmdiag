@@ -6,8 +6,6 @@ import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
 from sklearn.linear_model import LinearRegression
 
-from lmdiag.lm_stats.wrapper import LM
-
 SAMPLE_DATA = sm.datasets.longley.load()
 
 
@@ -41,9 +39,9 @@ def linearmodels_factory() -> Callable:
 
 @pytest.fixture(scope="session")
 def sklearn_factory() -> Callable:
-    def _sklearn_lm(x_dims: int) -> LM:
+    def _sklearn_lm(x_dims: int) -> tuple[Callable, np.ndarray, np.ndarray]:
         X, y = _get_sample_data(x_dims=x_dims)
         lm = LinearRegression().fit(X, y)
-        return LM(model=lm, X=X, y=y)
+        return lm, X, y
 
     return _sklearn_lm
