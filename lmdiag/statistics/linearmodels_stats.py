@@ -33,7 +33,7 @@ class LinearmodelsStats(StatsBase):
     @optionally_cached_property
     def cooks_d(self) -> np.ndarray:
         h_ii = self.leverage
-        cooks_d2 = self.standard_residuals**2 / self.params_count
+        cooks_d2 = self.standard_residuals**2 / self.parameter_count
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
@@ -45,6 +45,9 @@ class LinearmodelsStats(StatsBase):
         return h_ii
 
     @optionally_cached_property
-    def params_count(self) -> int:
-        # TODO: Rename method to degree_of_freedom?
+    def parameter_count(self) -> int:
+        """Number of parameters in the model, including intercept.
+
+        Also known as the degrees of freedom of the model.
+        """
         return self._lm.df_model

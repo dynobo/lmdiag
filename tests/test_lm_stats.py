@@ -18,7 +18,7 @@ from lmdiag.statistics.statsmodels_stats import StatsmodelsStats
         "standard_residuals",
         "cooks_d",
         "leverage",
-        "params_count",
+        "parameter_count",
     ],
 )
 def test_lm_stats_modules(

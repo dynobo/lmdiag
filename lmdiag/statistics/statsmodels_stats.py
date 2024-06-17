@@ -46,5 +46,5 @@ class StatsmodelsStats(StatsBase):
         return self._ols_influence.hat_matrix_diag
 
     @optionally_cached_property
-    def params_count(self) -> int:
+    def parameter_count(self) -> int:
         return len(self._lm.params)
