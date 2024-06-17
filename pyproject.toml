@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
-dependencies = ["matplotlib", "numpy", "pandas", "scipy", "statsmodels"]
+dependencies = ["matplotlib", "numpy", "scipy", "statsmodels"]
 optional-dependencies = { dev = [
     "linearmodels",
     "mypy",
@@ -45,6 +45,7 @@ requires = ["setuptools >= 61.0"]
 
 [tool.mypy]
 files = ["lmdiag/**/*.py", "tests/**/*.py"]
+exclude = ["build/"]
 follow_imports = "skip"
 ignore_missing_imports = true
 
@@ -86,21 +87,22 @@ select = [
 ]
 
 ignore = [
-    "D100",   # Missing docstring in public module
-    "D101",   # Missing docstring in public class
-    "D102",   # Missing docstring in public method
-    "D103",   # Missing docstring in public function
-    "D104",   # Missing docstring in public package
-    "D107",   # Missing docstring in __init__
-    "D203",   # One black line before class
-    "D213",   # Multi line summary second line
-    "ANN101", # Missing type annotation for `self` in method
-    "ANN401", # Dynamically typed expression Any
-    "TRY003", # Avoid specifying long messages outside the exception class
-    "ISC001", # Rule conflicts with ruff's formatter
-    "RET504", # Unnecessary assignment before return statement
-    "S101",   # Use of assert detected
-    "N806",   # Variable in function should be lowercase
+    "D100",    # Missing docstring in public module
+    "D101",    # Missing docstring in public class
+    "D102",    # Missing docstring in public method
+    "D103",    # Missing docstring in public function
+    "D104",    # Missing docstring in public package
+    "D107",    # Missing docstring in __init__
+    "D203",    # One black line before class
+    "D213",    # Multi line summary second line
+    "ANN101",  # Missing type annotation for `self` in method
+    "ANN401",  # Dynamically typed expression Any
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "ISC001",  # Rule conflicts with ruff's formatter
+    "RET504",  # Unnecessary assignment before return statement
+    "S101",    # Use of assert detected
+    "N806",    # Variable in function should be lowercase
+    "PLR0913", # Too many arguments in function definition
 ]
 
 [tool.ruff.lint.pydocstyle]

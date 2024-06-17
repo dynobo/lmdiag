@@ -8,18 +8,8 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
-from lmdiag.lm_stats.base import StatsBase
-from lmdiag.lm_stats.wrapper import LM
-
-try:
-    import linearmodels
-except ImportError:
-    linearmodels = None
-
-try:
-    import sklearn
-except ImportError:
-    sklearn = None
+from lmdiag.statistics import init_stats
+from lmdiag.statistics.base import StatsBase
 
 TITLE_SIZE = 15
 EDGE_COLOR = (0, 0, 0, 0.6)
@@ -27,39 +17,11 @@ EDGE_COLOR = (0, 0, 0, 0.6)
 LOWESS_DELTA = 0.005
 LOWESS_IT = 2
 
-# ONHOLD: Add 'TypeAlias' when Python 3.10 is minimum requirement
-FittedLinearModel = Any
-
-
-def _init_lm_stats(lm: FittedLinearModel) -> StatsBase:
-    """Gather statistics depending on Linear Model type."""
-    if isinstance(lm, sm.regression.linear_model.RegressionResultsWrapper):
-        from lmdiag.lm_stats.statsmodels import StatsmodelsStats
-
-        return StatsmodelsStats(lm)
-
-    if linearmodels and isinstance(lm, linearmodels.iv.results.OLSResults):
-        from lmdiag.lm_stats.linearmodels import LinearmodelsStats
-
-        return LinearmodelsStats(lm)
-
-    if (
-        isinstance(lm, LM)
-        and sklearn is not None
-        and isinstance(lm.model, sklearn.linear_model.LinearRegression)
-    ):
-        from lmdiag.lm_stats.sklearn import SklearnStats
-
-        return SklearnStats(lm)
-
-    raise TypeError(
-        "Model type not (yet) supported. Currently supported are linear "
-        "models from `statsmodels` and `linearmodels` packages."
-    )
-
 
 def resid_fit(
-    lm: FittedLinearModel,
+    lm: Any,
+    x: Optional[np.ndarray] = None,
+    y: Optional[np.ndarray] = None,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -71,6 +33,8 @@ def resid_fit(
 
     Args:
         lm: A fitted linear model of a supported type.
+        x: X (predictor) of training data. Only for `sklearn` models!
+        y: y (true response) of training data. Only for `sklearn` models!
         ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
             created.
         lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
@@ -81,7 +45,7 @@ def resid_fit(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -115,18 +79,25 @@ def resid_fit(
     return fig
 
 
-def q_q(lm: FittedLinearModel, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.Axes:
+def q_q(
+    lm: Any,
+    x: Optional[np.ndarray] = None,
+    y: Optional[np.ndarray] = None,
+    ax: Optional[mpl.axes.Axes] = None,
+) -> mpl.axes.Axes:
     """Draw Q-Q-Plot.
 
     Args:
         lm: A fitted linear model of a supported type.
+        x: X (predictor) of training data. Only for `sklearn` models!
+        y: y (true response) of training data. Only for `sklearn` models!
         ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
             created.
 
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -173,7 +144,9 @@ def q_q(lm: FittedLinearModel, ax: Optional[mpl.axes.Axes] = None) -> mpl.axes.A
 
 
 def scale_loc(
-    lm: FittedLinearModel,
+    lm: Any,
+    x: Optional[np.ndarray] = None,
+    y: Optional[np.ndarray] = None,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -185,6 +158,8 @@ def scale_loc(
 
     Args:
         lm: A fitted linear model of a supported type.
+        x: X (predictor) of training data. Only for `sklearn` models!
+        y: y (true response) of training data. Only for `sklearn` models!
         ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
             created.
         lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
@@ -195,7 +170,7 @@ def scale_loc(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -233,7 +208,9 @@ def scale_loc(
 
 
 def resid_lev(
-    lm: FittedLinearModel,
+    lm: Any,
+    x: Optional[np.ndarray] = None,
+    y: Optional[np.ndarray] = None,
     ax: Optional[mpl.axes.Axes] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
@@ -245,6 +222,8 @@ def resid_lev(
 
     Args:
         lm: A fitted linear model of a supported type.
+        x: X (predictor) of training data. Only for `sklearn` models!
+        y: y (true response) of training data. Only for `sklearn` models!
         ax: Matplotlib axes for drawing. If `None` (default), a new Figure and Axes are
             created.
         lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
@@ -255,7 +234,7 @@ def resid_lev(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
+    lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -270,17 +249,17 @@ def resid_lev(
     top_3 = cooks_d.argsort()[-3:][::1]
 
     # Get Cooks Distance contour lines
-    x = np.linspace(leverage.min(), leverage.max(), 100)
+    x_ = np.linspace(leverage.min(), leverage.max(), 100)
     params_count = lm_stats.params_count
 
     # Calculate lowess for smoothing line
     grid, yhat = lowess(std_resid, leverage, it=lowess_it, delta=lowess_delta).T
 
     # Draw cooks distance contours
-    ax.plot(x, np.sqrt((0.5 * params_count * (1 - x)) / x), "r--")
-    ax.plot(x, np.sqrt((1.0 * params_count * (1 - x)) / x), "r--")
-    ax.plot(x, np.negative(np.sqrt((0.5 * params_count * (1 - x)) / x)), "r--")
-    ax.plot(x, np.negative(np.sqrt((1.0 * params_count * (1 - x)) / x)), "r--")
+    ax.plot(x_, np.sqrt((0.5 * params_count * (1 - x_)) / x_), "r--")
+    ax.plot(x_, np.sqrt((1.0 * params_count * (1 - x_)) / x_), "r--")
+    ax.plot(x_, np.negative(np.sqrt((0.5 * params_count * (1 - x_)) / x_)), "r--")
+    ax.plot(x_, np.negative(np.sqrt((1.0 * params_count * (1 - x_)) / x_)), "r--")
 
     # Draw lowess line
     ax.plot(grid, yhat, "r-")
@@ -305,7 +284,9 @@ def resid_lev(
 
 
 def plot(
-    lm: FittedLinearModel,
+    lm: Any,
+    x: Optional[np.ndarray] = None,
+    y: Optional[np.ndarray] = None,
     lowess_delta: float = LOWESS_DELTA,
     lowess_it: int = LOWESS_IT,
 ) -> mpl.figure.Figure:
@@ -316,6 +297,8 @@ def plot(
 
     Args:
         lm: A fitted linear model of a supported type.
+        x: X (predictor) of training data. Only for `sklearn` models!
+        y: y (true response) of training data. Only for `sklearn` models!
         lowess_delta: A value between 0 and 1. Higher values speed up plotting, but
             reduce the accuracy of the smoothing line. Defaults to 0.005. See:
         lowess_it: Lower values speed up plotting, but reduce the accuracy of the
@@ -324,7 +307,7 @@ def plot(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else _init_lm_stats(lm)
+    lm_stats = init_stats(lm=lm, x=x, y=y)
 
     fig, axs = plt.subplots(2, 2, figsize=(10, 7))
 
