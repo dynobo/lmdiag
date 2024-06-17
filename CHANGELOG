@@ -1,1 +1,8 @@
-TODO: Compile Changes
+# Changelog
+
+## 0.4.0 (2024-06-18)
+
+- Breaking change: Drop support for Python < 3.9.
+- Improve performance
+- Fix crash for `linearmodels` with 2+ degrees of freedom.
+- Add support for scikit-learn's `LinearRegression`
