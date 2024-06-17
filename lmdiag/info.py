@@ -11,8 +11,8 @@ desc = {
         "Name": "Residuals vs. Fitted",
         "Method": "lmdiag.resid_fit(lm)",
         "x-Axis": (
-            "Fitted Values (The predicted y-hat values of the data used to train the "
-            "model, applied on the inverse of the link function)"
+            "Fitted Values (Predicted y-hat from training data. If a link function "
+            "exists, its inverse is applied)"
         ),
         "y-Axis": (
             "Residuals (The 'error' of the model; "
@@ -50,8 +50,8 @@ desc = {
         "Name": "Scale-Location",
         "Method": "lm.scale_loc(lm)",
         "x-Axis": (
-            "Fitted Values (The predicted y-hat values of the data used to train the "
-            "model, applied on the inverse of the link function)"
+            "Fitted Values (Predicted y-hat from training data. If a link function "
+            "exists, its inverse is applied)"
         ),
         "y-Axis": "Square root of the absolute value of the Standardized Residuals.",
         "Description": (
