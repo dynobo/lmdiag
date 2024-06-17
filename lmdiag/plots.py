@@ -250,7 +250,7 @@ def resid_lev(
 
     # Get Cooks Distance contour lines
     x_ = np.linspace(leverage.min(), leverage.max(), 100)
-    params_count = lm_stats.params_count
+    params_count = lm_stats.parameter_count
 
     # Calculate lowess for smoothing line
     grid, yhat = lowess(std_resid, leverage, it=lowess_it, delta=lowess_delta).T

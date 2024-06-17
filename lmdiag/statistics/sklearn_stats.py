@@ -32,7 +32,7 @@ class SklearnStats(StatsBase):
         h_ii = self.leverage
         resid_ss: np.ndarray = np.sum(residuals**2)
         nobs = len(self._y)
-        df_model = self.params_count
+        df_model = self.parameter_count
         var_e = np.sqrt(resid_ss / (nobs - df_model))
         standard_error = var_e * np.sqrt(1 - h_ii)
         return residuals / standard_error
@@ -40,7 +40,7 @@ class SklearnStats(StatsBase):
     @optionally_cached_property
     def cooks_d(self) -> np.ndarray:
         h_ii = self.leverage
-        cooks_d2 = self.standard_residuals**2 / self.params_count
+        cooks_d2 = self.standard_residuals**2 / self.parameter_count
         cooks_d2 *= h_ii / (1 - h_ii)
         return cooks_d2
 
@@ -54,7 +54,7 @@ class SklearnStats(StatsBase):
         return h_ii
 
     @optionally_cached_property
-    def params_count(self) -> int:
+    def parameter_count(self) -> int:
         params_count = len(self._lm.coef_)
         if self._lm.fit_intercept:
             params_count += 1

@@ -45,7 +45,7 @@ class StatsBase(ABC):
 
     @optionally_cached_property
     @abstractmethod
-    def params_count(self) -> int: ...
+    def parameter_count(self) -> int: ...
 
     @optionally_cached_property
     def sqrt_abs_residuals(self) -> np.ndarray:
