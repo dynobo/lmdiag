@@ -4,7 +4,7 @@ from typing import Callable
 import matplotlib.pyplot as plt
 import pytest
 
-from lmdiag import plot
+import lmdiag
 
 
 @pytest.mark.parametrize(
@@ -21,7 +21,7 @@ def test_plot_generates_expected_image(
     filename = base_path / f"test_plot_actual_{lm_type}.jpg"
 
     plt.style.use("seaborn-v0_8")
-    plt.figure(figsize=(10, 7))
+    lmdiag.style.use("black_and_red")
 
     x = y = None
     if lm_type == "statsmodels":
@@ -35,7 +35,7 @@ def test_plot_generates_expected_image(
 
     # Using lowess_delta leads to small differences between plot of
     # linearmodels and statsmodels, therefore we set it to 0 during testing
-    fig = plot(lm_fitted, x=x, y=y, lowess_delta=0)
+    fig = lmdiag.plot(lm_fitted, x=x, y=y, lowess_delta=0)
     fig.savefig(filename)
 
     # Quick and simple way to compare the plots is to compare jpg file sizes

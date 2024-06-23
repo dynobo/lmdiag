@@ -1,12 +1,10 @@
 """Module for printing descriptions to aid interpretation of the different plots."""
 
-# Standard Libs
 import textwrap
 from collections.abc import Iterable
 from typing import Literal, Union
 
-# Plot descriptions
-desc = {
+plot_descriptions = {
     "resid_fit": {
         "Name": "Residuals vs. Fitted",
         "Method": "lmdiag.resid_fit(lm)",
@@ -100,14 +98,14 @@ def _print_desc(
     method: Literal["resid_fit", "q_q", "scale_loc", "resid_lev", "plot"],
 ) -> None:
     """Print description of plot nicely formatted."""
-    for key, val in desc[method].items():
+    for key, val in plot_descriptions[method].items():
         wrapper = textwrap.TextWrapper(
             initial_indent=f"{key:>12}: ", width=79, subsequent_indent=" " * 14
         )
         print(wrapper.fill(val), end="\n\n")  # noqa: T201
 
 
-def info(
+def help(  # noqa: A001 # shadowing built-in
     method: Union[
         Iterable[Literal["resid_fit", "q_q", "scale_loc", "resid_lev", "plot"]],
         Literal["resid_fit", "q_q", "scale_loc", "resid_lev", "plot"],
@@ -127,10 +125,10 @@ def info(
         )
 
     for m in method:
-        if m in desc:
+        if m in plot_descriptions:
             _print_desc(m)
         else:
             print(  # noqa: T201
                 f"Unknown plotting method '{method}'."
-                "Run lmdiag.info() to print all available method descriptions."
+                "Run lmdiag.help() to print all available method descriptions."
             )
