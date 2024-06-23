@@ -38,6 +38,7 @@ X = sm.add_constant(predictor)
 lm = sm.OLS(response, X).fit()
 
 # Plot lmdiag facet chart
+lmdiag.style.use(style="black_and_red")  # Mimic R's plot.lm style
 fig = lmdiag.plot(lm)
 fig.show()
 ```

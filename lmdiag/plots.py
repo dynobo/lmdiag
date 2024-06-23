@@ -8,14 +8,23 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
+from lmdiag import style
 from lmdiag.statistics import init_stats
 from lmdiag.statistics.base import StatsBase
 
-TITLE_SIZE = 15
-EDGE_COLOR = (0, 0, 0, 0.6)
-
 LOWESS_DELTA = 0.005
 LOWESS_IT = 2
+
+
+def _get_figure(
+    ax: Optional[mpl.axes.Axes] = None,
+) -> tuple[mpl.figure.Figure, mpl.axes.Axes]:
+    """Retrieve figure of axes or create a new one."""
+    if ax is None:
+        fig, ax = plt.subplots(**style.subplots)
+    else:
+        fig = ax.get_figure()
+    return fig, ax
 
 
 def resid_fit(
@@ -47,34 +56,20 @@ def resid_fit(
     """
     lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.get_figure()
-
-    # Calculate values for scatter points
     fitted = lm_stats.fitted_values
     residuals = lm_stats.residuals
+    smooth_x, smooth_y = lowess(residuals, fitted, it=lowess_it, delta=lowess_delta).T
+    top_3_observations = np.abs(residuals).argsort()[-3:][::1]
 
-    # Calculate lowess for smoothing line
-    grid, yhat = lowess(residuals, fitted, it=lowess_it, delta=lowess_delta).T
-
-    # Get top three observations for annotation
-    top_3 = np.abs(residuals).argsort()[-3:][::1]
-
-    # Draw scatter and lowess line
-    ax.plot([fitted.min(), fitted.max()], [0, 0], "k:")
-    ax.plot(grid, yhat, "r-")
-    ax.plot(fitted, residuals, "o", mec=EDGE_COLOR, markeredgewidth=1, fillstyle="none")
-
-    # Draw Annotations
-    for point in top_3:
-        ax.annotate(point, xy=(fitted[point], residuals[point]), color="r")
-
-    # Set Labels
-    ax.set_title("Residual vs. Fitted", fontsize=TITLE_SIZE)
-    ax.set_xlabel("Fitted values")
-    ax.set_ylabel("Residuals")
+    fig, ax = _get_figure(ax=ax)
+    ax.plot([fitted.min(), fitted.max()], [0, 0], **style.plot_contour)
+    ax.plot(smooth_x, smooth_y, **style.plot)
+    ax.scatter(fitted, residuals, **style.scatter)
+    for ob in top_3_observations:
+        ax.annotate(ob, xy=(fitted[ob], residuals[ob]), **style.annotate)
+    ax.set_title("Residual vs. Fitted", **style.title)
+    ax.set_xlabel("Fitted values", **style.xy_label)
+    ax.set_ylabel("Residuals", **style.xy_label)
 
     return fig
 
@@ -84,7 +79,7 @@ def q_q(
     x: Optional[np.ndarray] = None,
     y: Optional[np.ndarray] = None,
     ax: Optional[mpl.axes.Axes] = None,
-) -> mpl.axes.Axes:
+) -> mpl.figure.Figure:
     """Draw Q-Q-Plot.
 
     Args:
@@ -99,46 +94,30 @@ def q_q(
     """
     lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.get_figure()
-
-    # Calculate values for scatter points
     std_resid = lm_stats.standard_residuals
     quantiles = lm_stats.normalized_quantiles
+    std_resid_sorted = np.sort(std_resid)
+    quantiles_sorted = np.sort(quantiles)
+    fitted_values = np.polyfit(quantiles_sorted, std_resid_sorted, deg=1)
+    fitted_line_y = fitted_values[0] * quantiles_sorted + fitted_values[1]
 
-    # Sort for Q-Q plot
-    std_resid_sort = np.sort(std_resid)
-    quantiles_sort = np.sort(quantiles)
-
-    # Function for fitted line
-    fit = np.polyfit(quantiles_sort, std_resid_sort, deg=1)
-
-    # Get top three observations for annotation
-    # (need position of sorted for coord, and original for label)
-    top_3_sorted = np.abs(std_resid_sort).argsort()[-3:][::1]
+    # Index of sorted obs is used for annotation position, original index as label:
+    top_3_sorted = np.abs(std_resid_sorted).argsort()[-3:][::1]
     top_3_orig = np.abs(std_resid).argsort()[-3:][::1]
-    top_3 = zip(top_3_sorted, top_3_orig)
+    top_3_observations = zip(top_3_sorted, top_3_orig)
 
-    ax.plot(quantiles_sort, fit[0] * quantiles_sort + fit[1], "r:")
-    ax.plot(
-        quantiles_sort,
-        std_resid_sort,
-        "o",
-        mec=EDGE_COLOR,
-        markeredgewidth=1,
-        mfc="none",
-    )
-
-    for point in top_3:
+    fig, ax = _get_figure(ax=ax)
+    ax.plot(quantiles_sorted, fitted_line_y, ":", **style.plot)
+    ax.scatter(quantiles_sorted, std_resid_sorted, **style.scatter)
+    for ob in top_3_observations:
         ax.annotate(
-            point[1], xy=(quantiles_sort[point[0]], std_resid_sort[point[0]]), color="r"
+            ob[1],
+            xy=(quantiles_sorted[ob[0]], std_resid_sorted[ob[0]]),
+            **style.annotate,
         )
-
-    ax.set_title("Normal Q-Q", fontsize=TITLE_SIZE)
-    ax.set_xlabel("Theoretical Quantiles")
-    ax.set_ylabel("Standardized residuals")
+    ax.set_title("Normal Q-Q", **style.title)
+    ax.set_xlabel("Theoretical Quantiles", **style.xy_label)
+    ax.set_ylabel("Standardized residuals", **style.xy_label)
 
     return fig
 
@@ -172,37 +151,23 @@ def scale_loc(
     """
     lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.get_figure()
-
-    # Get Fitted Values
     fitted_vals = lm_stats.fitted_values
     sqrt_abs_res = lm_stats.sqrt_abs_residuals
+    top_3_observations = sqrt_abs_res.argsort()[-3:][::1]
+    smooth_x, smooth_y = lowess(
+        sqrt_abs_res, fitted_vals, it=lowess_it, delta=lowess_delta
+    ).T
 
-    # Get top three observations for annotation
-    top_3 = sqrt_abs_res.argsort()[-3:][::1]
-
-    # Calculate lowess for smoothing line
-    grid, yhat = lowess(sqrt_abs_res, fitted_vals, it=lowess_it, delta=lowess_delta).T
-
-    ax.plot(grid, yhat, "r-")
-    ax.plot(
-        fitted_vals,
-        sqrt_abs_res,
-        "o",
-        mec=EDGE_COLOR,
-        markeredgewidth=1,
-        fillstyle="none",
+    fig, ax = _get_figure(ax=ax)
+    ax.plot(smooth_x, smooth_y, **style.plot)
+    ax.scatter(fitted_vals, sqrt_abs_res, **style.scatter)
+    for ob in top_3_observations:
+        ax.annotate(ob, xy=(fitted_vals[ob], sqrt_abs_res[ob]), **style.annotate)
+    ax.set_title("Scale-Location", **style.title)
+    ax.set_xlabel("Fitted values", **style.xy_label)
+    ax.set_ylabel(
+        r"$\sqrt{\left|\mathregular{Standardized\ residuals}\right|}$", **style.xy_label
     )
-
-    for point in top_3:
-        ax.annotate(point, xy=(fitted_vals[point], sqrt_abs_res[point]), color="r")
-
-    ax.set_title("Scale-Location", fontsize=TITLE_SIZE)
-    ax.set_xlabel("Fitted values")
-    ax.set_ylabel(r"$\sqrt{\left|\mathregular{Standardized\ residuals}\right|}$")
 
     return fig
 
@@ -236,49 +201,42 @@ def resid_lev(
     """
     lm_stats = lm if isinstance(lm, StatsBase) else init_stats(lm, x=x, y=y)
 
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.get_figure()
-
     std_resid = lm_stats.standard_residuals
     cooks_d = lm_stats.cooks_d
     leverage = lm_stats.leverage
-
-    # Get top three observations for annotation
-    top_3 = cooks_d.argsort()[-3:][::1]
-
-    # Get Cooks Distance contour lines
+    top_3_observations = cooks_d.argsort()[-3:][::1]
     x_ = np.linspace(leverage.min(), leverage.max(), 100)
     params_count = lm_stats.parameter_count
+    smooth_x, smooth_y = lowess(std_resid, leverage, it=lowess_it, delta=lowess_delta).T
 
-    # Calculate lowess for smoothing line
-    grid, yhat = lowess(std_resid, leverage, it=lowess_it, delta=lowess_delta).T
+    fig, ax = _get_figure(ax=ax)
 
     # Draw cooks distance contours
-    ax.plot(x_, np.sqrt((0.5 * params_count * (1 - x_)) / x_), "r--")
-    ax.plot(x_, np.sqrt((1.0 * params_count * (1 - x_)) / x_), "r--")
-    ax.plot(x_, np.negative(np.sqrt((0.5 * params_count * (1 - x_)) / x_)), "r--")
-    ax.plot(x_, np.negative(np.sqrt((1.0 * params_count * (1 - x_)) / x_)), "r--")
-
-    # Draw lowess line
-    ax.plot(grid, yhat, "r-")
-
-    # Draw data points
+    ax.plot(x_, np.sqrt((0.5 * params_count * (1 - x_)) / x_), **style.plot_contour)
+    ax.plot(x_, np.sqrt((1.0 * params_count * (1 - x_)) / x_), **style.plot_contour)
     ax.plot(
-        leverage, std_resid, "o", mec=EDGE_COLOR, markeredgewidth=1, fillstyle="none"
+        x_,
+        np.negative(np.sqrt((0.5 * params_count * (1 - x_)) / x_)),
+        **style.plot_contour,
     )
+    ax.plot(
+        x_,
+        np.negative(np.sqrt((1.0 * params_count * (1 - x_)) / x_)),
+        **style.plot_contour,
+    )
+
+    ax.plot(smooth_x, smooth_y, **style.plot)
+    ax.scatter(leverage, std_resid, **style.scatter)
 
     # Limit y axis to actual values (otherwise contour lines disturb scale)
     ax.set_ylim(std_resid.min() * 1.1, std_resid.max() * 1.1)
 
-    # Draw data point annotations
-    for point in top_3:
-        ax.annotate(point, xy=(leverage[point], std_resid[point]), color="r")
+    for ob in top_3_observations:
+        ax.annotate(ob, xy=(leverage[ob], std_resid[ob]), **style.annotate)
 
-    ax.set_title("Residuals vs. Leverage", fontsize=TITLE_SIZE)
-    ax.set_xlabel("Leverage")
-    ax.set_ylabel("Standardized residuals")
+    ax.set_title("Residuals vs. Leverage", **style.title)
+    ax.set_xlabel("Leverage", **style.xy_label)
+    ax.set_ylabel("Standardized residuals", **style.xy_label)
 
     return fig
 
@@ -309,14 +267,14 @@ def plot(
     """
     lm_stats = init_stats(lm=lm, x=x, y=y)
 
-    fig, axs = plt.subplots(2, 2, figsize=(10, 7))
+    fig, axs = plt.subplots(2, 2, **style.subplots)
 
     resid_fit(lm_stats, ax=axs[0][0], lowess_delta=lowess_delta, lowess_it=lowess_it)
     q_q(lm_stats, ax=axs[0][1])
     scale_loc(lm_stats, ax=axs[1][0], lowess_delta=lowess_delta, lowess_it=lowess_it)
     resid_lev(lm_stats, ax=axs[1][1], lowess_delta=lowess_delta, lowess_it=lowess_it)
 
-    fig.tight_layout(pad=0.5, w_pad=4, h_pad=3.5)
+    fig.tight_layout(**style.tight_layout)
 
     return fig
 
