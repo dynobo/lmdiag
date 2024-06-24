@@ -1,3 +1,5 @@
+<!-- vim: syntax=Markdown -->
+
 # Changelog
 
 ## 0.4.0 (2024-06-24)
@@ -5,6 +7,8 @@
 - Breaking changes:
   - Drop support for Python < 3.9.
   - Rename `lmdiag.info()` to `lmdiag.help()`
+  - The default style now follows matplotlib's style. To get the old one, call
+    `lmdiag.style.use("black_and_red")` before `lmdiag.plot()`.
 - Fix crash for `linearmodels` with 2+ degrees of freedom.
 - Add support for scikit-learn's `LinearRegression`
 - Improve performance

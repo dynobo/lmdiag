@@ -17,8 +17,9 @@ available documentation.
 ## Usage
 
 lmdiag generates plots for _fitted_ linear regression models from
-[`statsmodels`](https://www.statsmodels.org/stable/index.html) or
-[`linearmodels`](https://bashtage.github.io/linearmodels/doc/index.html).
+[`statsmodels`](https://www.statsmodels.org/stable/index.html),
+[`linearmodels`](https://bashtage.github.io/linearmodels/doc/index.html) and
+[`scikit-learn`](https://scikit-learn.org/stable/).
 
 You can find many examples in
 [this jupyter notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb).
