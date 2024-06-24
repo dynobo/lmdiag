@@ -36,6 +36,17 @@ subplots: MplKwargs = {}
 
 
 def use(style: str) -> None:
+    """Set predefined style for plots.
+
+    Available styles:
+    - 'black_and_red' (mimics style of R's lm.diag)
+
+    Args:
+        style: Name of the preset style.
+
+    Raises:
+        ValueError: If style is unknown.
+    """
     if style == "black_and_red":
         scatter.update(
             {"marker": "o", "color": "none", "edgecolors": "black", "linewidth": 1}

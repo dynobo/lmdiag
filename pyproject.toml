@@ -1,6 +1,6 @@
 [project]
 name = "lmdiag"
-version = "0.3.8"
+version = "0.4.0"
 description = "Diagnostic Plots for Lineare Regression Models. Similar to plot.lm in R."
 keywords = [
     "lm",

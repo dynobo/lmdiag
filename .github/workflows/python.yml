@@ -23,12 +23,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install matplotlib default font
-        run: |
-          wget -O dejavu.zip http://sourceforge.net/projects/dejavu/files/dejavu/2.37/dejavu-fonts-ttf-2.37.zip
-          unzip -d dejavu/ dejavu.zip
-          mv dejavu /usr/share/fonts/
-          fc-cache -fv
       - name: Install dependencies
         run: pip install '.[dev]'
       - name: Format
