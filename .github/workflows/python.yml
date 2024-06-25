@@ -66,3 +66,10 @@ jobs:
         with:
           verbose: true
           print-hash: true
+      - name: Create release
+        if: github.repository == 'dynobo/lmdiag'
+        uses: ncipollo/release-action@v1
+        with:
+          body:
+            See [CHANGELOG](https://github.com/dynobo/lmdiag/blob/main/CHANGELOG) for
+            details.
