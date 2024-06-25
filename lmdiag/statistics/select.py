@@ -51,19 +51,19 @@ def get_stats(
     if isinstance(lm, (RegressionResultsWrapper, GLMResults, RLMResults)):
         if x or y:
             _warn_x_y()
-        model_stats = _init_statsmodels_stats(lm)
+        model_stats = _init_statsmodels_stats(lm=lm)
 
     elif linearmodels and isinstance(
         lm, (linearmodels.iv.results.OLSResults, linearmodels.iv.results.IVResults)
     ):
         if x or y:
             _warn_x_y()
-        model_stats = _init_linearmodels_stats(lm)
+        model_stats = _init_linearmodels_stats(lm=lm)
 
     elif sklearn and isinstance(lm, sklearn.linear_model.LinearRegression):
         if x is None or y is None:
             raise ValueError("x and y args must be provided this model type!")
-        model_stats = _init_sklearn_stats(lm, x, y)
+        model_stats = _init_sklearn_stats(lm=lm, x=x, y=y)
 
     else:
         raise TypeError(

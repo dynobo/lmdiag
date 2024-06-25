@@ -21,7 +21,7 @@ lmdiag generates plots for _fitted_ linear regression models from
 [`linearmodels`](https://bashtage.github.io/linearmodels/doc/index.html) and
 [`scikit-learn`](https://scikit-learn.org/stable/).
 
-You can find many examples in
+You can find some usage examples in
 [this jupyter notebook](https://github.com/dynobo/lmdiag/blob/master/example.ipynb).
 
 ### Example
@@ -33,10 +33,10 @@ import lmdiag
 
 # Fit model with random sample data
 np.random.seed(20)
-predictor = np.random.normal(size=30, loc=20, scale=3)
-response = 5 + 5 * predictor + np.random.normal(size=30)
-X = sm.add_constant(predictor)
-lm = sm.OLS(response, X).fit()
+X = np.random.normal(size=30, loc=20, scale=3)
+y = 5 + 5 * X + np.random.normal(size=30)
+X = sm.add_constant(predictor)  # intercept required by statsmodels
+lm = sm.OLS(y, X).fit()
 
 # Plot lmdiag facet chart
 lmdiag.style.use(style="black_and_red")  # Mimic R's plot.lm style
@@ -64,14 +64,14 @@ fig.show()
 
 - Print description to aid plot interpretation:
 
-  `lmdiag.info()` (for all plots)
+  `lmdiag.help()` (for all plots)
 
-  `lmdiag.info('<method name>')` (for individual plot)
+  `lmdiag.help('<method name>')` (for individual plot)
 
-### Performance
+### Increase performance
 
-Plotting models fitted on large datasets can be slow. There are some things you can try
-to speed it up:
+Plotting models fitted on large datasets might be slow. There are some things you can
+try to speed it up:
 
 #### 1. Tune LOWESS-parameters
 
@@ -98,9 +98,7 @@ import matplotlib
 matplotlib.use('agg')
 ```
 
-## Development
-
-### Setup environment
+### Setup development environment
 
 ```sh
 python -m venv .venv

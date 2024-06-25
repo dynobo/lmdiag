@@ -8,11 +8,11 @@ class LinearmodelsStats(StatsBase):
     def __init__(
         self,
         lm: linearmodels.iv.results.OLSResults,
-        cache: bool = True,
+        use_cache: bool = True,
     ) -> None:
         super().__init__()
         self._lm = lm
-        self._cache_properties = cache
+        self._use_cache = use_cache
 
     @optionally_cached_property
     def residuals(self) -> np.ndarray:

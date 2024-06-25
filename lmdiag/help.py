@@ -128,7 +128,7 @@ def help(  # noqa: A001 # shadowing built-in
         if m in plot_descriptions:
             _print_desc(m)
         else:
-            print(  # noqa: T201
+            raise ValueError(
                 f"Unknown plotting method '{method}'."
                 "Run lmdiag.help() to print all available method descriptions."
             )

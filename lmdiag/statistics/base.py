@@ -7,11 +7,12 @@ from scipy import special
 
 
 def optionally_cached_property(func: Callable) -> property:
+    """Cache property of a StatsBase instance, if caching is enabled."""
     cached = cached_property(func)
 
     @wraps(func)
     def wrapper(cls: Any) -> Any:
-        if getattr(cls, "_cache_properties", False):
+        if getattr(cls, "_use_cache", False):
             if not hasattr(cached, "__wrapped__"):
                 cached.__set_name__(cls, func.__name__)
             return cached.__get__(cls)
@@ -21,9 +22,13 @@ def optionally_cached_property(func: Callable) -> property:
 
 
 class StatsBase(ABC):
+    _use_cache: bool
+
     @optionally_cached_property
     @abstractmethod
-    def residuals(self) -> np.ndarray: ...
+    def residuals(self) -> np.ndarray:
+        """Distance of actual y from predicted y-hat."""
+        ...
 
     @optionally_cached_property
     @abstractmethod
@@ -45,10 +50,13 @@ class StatsBase(ABC):
 
     @optionally_cached_property
     @abstractmethod
-    def parameter_count(self) -> int: ...
+    def parameter_count(self) -> int:
+        """Degrees of freedom of the model; Count of variables + intercept."""
+        ...
 
     @optionally_cached_property
     def sqrt_abs_residuals(self) -> np.ndarray:
+        """Square root of absolute standardized residuals."""
         return np.sqrt(np.abs(self.standard_residuals))
 
     @optionally_cached_property

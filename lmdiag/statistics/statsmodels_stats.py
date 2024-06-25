@@ -11,11 +11,11 @@ class StatsmodelsStats(StatsBase):
     def __init__(
         self,
         lm: sm.regression.linear_model.RegressionResultsWrapper,
-        cache: bool = True,
+        use_cache: bool = True,
     ) -> None:
         super().__init__()
         self._lm = lm
-        self._cache_properties = cache
+        self._use_cache = use_cache
         self.__ols_influence: Union[OLSInfluence, None] = None
 
     @property

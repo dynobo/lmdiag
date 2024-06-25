@@ -40,6 +40,8 @@ def resid_fit(
     For detailed explanation fo the lowess parameters, see:
     https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
 
+    Run `lmdiag.help("resid_fit")` for hints on chart interpretation.
+
     Args:
         lm: A fitted linear model of a supported type.
         x: X (predictor) of training data. Only for `sklearn` models!
@@ -54,7 +56,7 @@ def resid_fit(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm, x=x, y=y)
+    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm=lm, x=x, y=y)
 
     fitted = lm_stats.fitted_values
     residuals = lm_stats.residuals
@@ -82,6 +84,8 @@ def q_q(
 ) -> mpl.figure.Figure:
     """Draw Q-Q-Plot.
 
+    Run `lmdiag.help("q_q")` for hints on chart interpretation.
+
     Args:
         lm: A fitted linear model of a supported type.
         x: X (predictor) of training data. Only for `sklearn` models!
@@ -92,7 +96,7 @@ def q_q(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm, x=x, y=y)
+    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm=lm, x=x, y=y)
 
     std_resid = lm_stats.standard_residuals
     quantiles = lm_stats.normalized_quantiles
@@ -135,6 +139,8 @@ def scale_loc(
     For detailed explanation fo the lowess parameters, see:
     https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
 
+    Run `lmdiag.help("scale_loc")` for hints on chart interpretation.
+
     Args:
         lm: A fitted linear model of a supported type.
         x: X (predictor) of training data. Only for `sklearn` models!
@@ -149,7 +155,7 @@ def scale_loc(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm, x=x, y=y)
+    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm=lm, x=x, y=y)
 
     fitted_vals = lm_stats.fitted_values
     sqrt_abs_res = lm_stats.sqrt_abs_residuals
@@ -185,6 +191,8 @@ def resid_lev(
     For detailed explanation fo the lowess parameters, see:
     https://www.statsmodels.org/stable/generated/statsmodels.nonparametric.smoothers_lowess.lowess.html
 
+    Run `lmdiag.help("resid_lev")` for hints on chart interpretation.
+
     Args:
         lm: A fitted linear model of a supported type.
         x: X (predictor) of training data. Only for `sklearn` models!
@@ -199,7 +207,7 @@ def resid_lev(
     Returns:
         Figure of the plot.
     """
-    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm, x=x, y=y)
+    lm_stats = lm if isinstance(lm, StatsBase) else get_stats(lm=lm, x=x, y=y)
 
     std_resid = lm_stats.standard_residuals
     cooks_d = lm_stats.cooks_d

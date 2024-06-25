@@ -10,13 +10,13 @@ class SklearnStats(StatsBase):
         lm: LinearRegression,
         x: np.ndarray,
         y: np.ndarray,
-        cache: bool = True,
+        use_cache: bool = True,
     ) -> None:
         super().__init__()
         self._lm = lm
         self._X = x
         self._y = y
-        self._cache_properties = cache
+        self._use_cache = use_cache
 
     @optionally_cached_property
     def residuals(self) -> np.ndarray:
