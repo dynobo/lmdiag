@@ -4,7 +4,7 @@
 
 ## 0.4.1 (2024-06-25)
 
-- Add `lmdiag.style.use("default") for reverting to default style.
+- Add `lmdiag.style.use("default")` for reverting to default style.
 - Minor documentation updates.
 
 ## 0.4.0 (2024-06-24)
