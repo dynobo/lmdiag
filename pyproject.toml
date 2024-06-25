@@ -41,6 +41,9 @@ requires-python = ">=3.9"
 
 [project.urls]
 Homepage = "http://github.com/dynobo/lmdiag"
+Repository = "https://github.com/dynobo/lmdiag.git"
+Issues = "https://github.com/dynobo/lmdiag/issues"
+Changelog = "https://github.com/dynobo/lmdiag/blob/main/CHANGELOG"
 
 [build-system]
 build-backend = "setuptools.build_meta"
